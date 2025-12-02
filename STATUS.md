@@ -1,6 +1,6 @@
 # PROJECT STATUS
 
-**Last Updated:** 2025-12-02 (evening)
+**Last Updated:** 2025-12-02 (final)
 **Phase:** Phase 1 - Foundation → Phase 2 - Research Consolidation → Phase 3 - Expansion
 
 ---
@@ -102,7 +102,7 @@ This project models off-grid AI inference infrastructure powered by natural gas 
 | Calculator Scenarios | 4 | 20+ |
 | GPU Profiles | 1 (H100 PCIe validated) | 3 (H100, H200, A100) - **H100 validated from research** |
 | Documentation | 95% | 95% |
-| Consolidated Reports | 5 (H100 Economics, BESS Decision, GPU-Generator Stability, GPU Phase Research, Data Logistics) | Complete |
+| Consolidated Reports | 6 (H100 Economics, BESS Decision, GPU-Generator Stability, GPU Phase Research, Data Logistics, Inference Workload Taxonomy) | Complete |
 | Research Sources Consolidated | 12 sources across 3 reports | Complete |
 | Research Prompts | 4 (Generator Integration, BESS Decision, Data Logistics Pricing, Inference Workload Taxonomy) | Complete |
 | Planning Documents | 3 (Sneakernet Optimization, Data Optimization Strategies, NVIDIA Manuals Integration) | Complete |
@@ -110,6 +110,20 @@ This project models off-grid AI inference infrastructure powered by natural gas 
 ---
 
 ## Recent Updates
+
+**2025-12-02 (final):**
+- ✅ Consolidated Inference Workload Taxonomy & Market Research from 4 independent research efforts
+  - Validated overall market: $97-106B (2024-2025) → $255-378B (2030) at 17.5-19.2% CAGR
+  - Validated hardware power: H100 PCIe (350W) vs SXM (700W) - 2x difference
+  - Validated NVLink requirements: Required for training 70B+, optional for most inference
+  - Identified disagreements: Specific workload market sizes (likely due to different market definitions)
+  - Key finding: PCIe GPUs (L4 at 72W, H100 PCIe at 350W) optimal for off-grid; SXM (700W) impractical
+  - Source: `research/inference-types/CONSOLIDATED-SUMMARY.md`
+- ✅ Updated all documentation to reflect inference workload taxonomy findings
+  - PRD: Added hardware selection guidelines (SXM vs PCIe, NVLink requirements)
+  - Glossary: Added SXM, PCIe, NVLink definitions
+  - Gap Analysis: Marked inference workload taxonomy as complete
+  - Documentation index: Added reference to consolidated summary
 
 **2025-12-02 (evening):**
 - ✅ Created Inference Workload Taxonomy & Market Research Prompt
@@ -184,9 +198,9 @@ This project models off-grid AI inference infrastructure powered by natural gas 
 
 **Next Milestone:** 
 1. ✅ **COMPLETE**: Resolve BESS sizing discrepancy (50-100 kWh vs 100-200 kWh) - **Resolved December 2025**
-2. Await inference workload taxonomy research results (4 research agents)
+2. ✅ **COMPLETE**: Inference workload taxonomy research - **Completed December 2025**
 3. Obtain Caterpillar TMI data for generator inertia constants (optional enhancement)
-4. Begin Phase 3 Expansion (BESS sizing calculator, economic model)
+4. Begin Phase 3 Expansion (BESS sizing calculator, economic model, hardware selection calculator)
 
 ---
 

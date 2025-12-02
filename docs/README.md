@@ -41,7 +41,8 @@
 **Active Research Prompts:**
 - `prompts/research/COMPREHENSIVE-GPU-POWER-VALIDATION-PROMPT.md` - Unified prompt for GPU power validation research
 - `prompts/research/DATA-LOGISTICS-PRICING-RESEARCH-PROMPT.md` - Research prompt for Starlink, Sneakernet, and Fiber pricing validation
-- `prompts/research/INFERENCE-WORKLOAD-TAXONOMY-MARKET-RESEARCH-PROMPT.md` - ✅ **NEW** - Comprehensive research on inference workload types, hardware requirements, latency classifications, and market sizing
+- `prompts/research/INFERENCE-WORKLOAD-TAXONOMY-MARKET-RESEARCH-PROMPT.md` - ✅ **COMPLETE** - Comprehensive research on inference workload types, hardware requirements, latency classifications, and market sizing
+- `research/inference-types/CONSOLIDATED-SUMMARY.md` - ✅ **NEW** - Consolidated summary of inference workload taxonomy research (4 sources), hardware selection guidelines (SXM vs PCIe, NVLink), and market sizing ($97-106B → $255-378B by 2030)
 
 **Other Research Prompts:**
 - `prompts/research/BESS-DECISION-ANALYSIS-PROMPT.md`

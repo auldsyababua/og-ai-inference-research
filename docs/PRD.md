@@ -1,7 +1,7 @@
 # **Compute Refinery Modeling PRD (Working Draft)**
 
 **Last Updated:** 2025-12-02  
-**Status:** Updated with validated research findings (GPU Phase Research, Data Logistics Pricing)
+**Status:** Updated with validated research findings (GPU Phase Research, Data Logistics Pricing, Inference Workload Taxonomy)
 
 ## **1\. Overview**
 
@@ -277,6 +277,98 @@ The next agent should be aware that:
 
 * The tool will be used internally for scenario testing and early-stage design validation—**not** for final electrical engineering sign-off.
 
-This agent should consult this PRD for context and extend it only by adding factual data, extracted generator parameters, and structured datasets as needed.  
- This PRD will evolve to incorporate equations, example scenarios, and more detailed architectural constraints as the modeling becomes sharper.
+This agent should consult this PRD for context and extend it only by adding factual data, extracted generator parameters, and structured datasets as needed.
+
+---
+
+## **7. Hardware Selection Guidelines** - ✅ **ADDED** (December 2025)
+
+### **7.1 SXM vs PCIe Selection Criteria**
+
+**Status:** Validated from consolidated inference workload taxonomy research.
+
+**Key Findings:**
+- ✅ **H100 PCIe:** 350W TDP, standard air cooling, suitable for off-grid deployments
+- ✅ **H100 SXM:** 700W TDP, liquid/custom cooling required, impractical for off-grid
+- ✅ **Power Ratio:** 2:1 (SXM consumes 2x power of PCIe)
+- ✅ **Source:** `research/inference-types/CONSOLIDATED-SUMMARY.md`
+
+**Selection Guidelines:**
+
+| Use Case | Recommended Form Factor | Rationale |
+|----------|------------------------|-----------|
+| **Single-GPU Inference** | PCIe (H100 PCIe, L4) | PCIe sufficient, lower power (350W vs 700W) |
+| **Multi-GPU Inference (<70B)** | PCIe (data-parallel) | NVLink optional, PCIe bandwidth sufficient |
+| **Multi-GPU Inference (70B+)** | SXM + NVLink | Required for tensor-parallel inference |
+| **Training (<13B)** | PCIe (with LoRA/QLoRA) | Memory-efficient fine-tuning possible |
+| **Training (70B+)** | SXM + NVLink | Required for efficient multi-GPU training |
+| **Off-Grid Deployments** | PCIe (L4 preferred) | Power-constrained, SXM impractical |
+
+**Critical Finding:** For off-grid deployments, **PCIe form factors are preferred** in nearly all scenarios. The L4 (72W, 24GB) represents the optimal price-performance choice for most inference deployments. Reserve H100 SXM5 only for multi-GPU configurations requiring tensor parallelism exceeding TP=2.
+
+---
+
+### **7.2 NVLink Requirements**
+
+**Status:** Validated from consolidated inference workload taxonomy research.
+
+**NVLink Required:**
+- ✅ Multi-GPU training of large models (70B+ parameters)
+- ✅ Tensor-parallel inference of models that cannot fit on a single GPU (70B+)
+
+**NVLink Optional:**
+- ✅ Single-GPU inference (any model size)
+- ✅ Data-parallel inference (replicating model across GPUs)
+- ✅ Fine-tuning with LoRA/QLoRA (memory-efficient techniques)
+
+**NVLink Not Needed:**
+- ✅ Single-GPU inference (any model size)
+
+**Key Finding:** Most inference workloads can run effectively on PCIe-connected systems without NVLink.
+
+**Interconnect Specifications (Validated):**
+- PCIe Gen5: 128 GB/s (host interface)
+- NVLink Bridge (PCIe pairs): 600 GB/s
+- NVLink-4 (SXM): 900 GB/s per GPU
+- NVSwitch (8-GPU SXM): 7.2 TB/s total
+
+**Source:** `research/inference-types/CONSOLIDATED-SUMMARY.md`
+
+---
+
+### **7.3 Off-Grid Hardware Recommendations**
+
+**Status:** Validated from consolidated inference workload taxonomy research.
+
+**Optimal Off-Grid GPUs:**
+1. **NVIDIA L4 (72W):** Optimal for most inference workloads
+   - 24GB VRAM, 242 TFLOPS (FP8)
+   - Excellent energy efficiency
+   - Suitable for models up to 13B parameters
+
+2. **H100 PCIe (350W):** For larger models requiring more VRAM
+   - 80GB VRAM, suitable for 70B models with quantization
+   - Standard air cooling
+   - Power-efficient compared to SXM (2x difference)
+
+3. **Jetson AGX Orin (15-60W):** For ultra-low-power edge applications
+   - 275 TOPS, enables solar-battery deployment
+   - Suitable for edge IoT, robotics, embedded systems
+
+**Avoid for Off-Grid:**
+- ❌ H100 SXM (700W TDP, requires liquid cooling)
+- ❌ Multi-GPU SXM configurations (power-prohibitive)
+
+**Power Planning:**
+- Plan for 25-50% power overhead for cooling and ancillary systems
+- Solar microgrids are cost-competitive in high-sun regions
+- Generator sizing must account for GPU power + overhead
+
+**Source:** `research/inference-types/CONSOLIDATED-SUMMARY.md`
+
+---
+
+## **8. Notes / Future Directions**
+
+This PRD will evolve to incorporate equations, example scenarios, and more detailed architectural constraints as the modeling becomes sharper.
 

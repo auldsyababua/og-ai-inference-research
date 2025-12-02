@@ -1,10 +1,10 @@
 # TERMINOLOGY GLOSSARY
 **Off-Grid AI Inference Research Project**
 
-**Version:** 1.1
+**Version:** 1.2
 **Last Updated:** 2025-12-02
 **Purpose:** Standardized terminology for all project documents  
-**Status:** Updated with validated parameters from consolidated research (December 2025)
+**Status:** Updated with validated parameters from consolidated research (GPU Phase, Data Logistics, Inference Workload Taxonomy - December 2025)
 
 ---
 
@@ -116,6 +116,26 @@
 | **Steady-State Inference** | - | - | Continuous inference at full utilization | Maximum sustained power |
 | **Cleanup** | - | - | De-allocation of resources after job completion | Power ramp down |
 | **Teardown** | - | - | Final shutdown and memory clearing | Return to idle |
+
+### GPU Form Factors & Interconnects
+
+| Term | Symbol | Units | Definition | Usage Notes |
+|------|--------|-------|------------|-------------|
+| **PCIe** | - | - | Peripheral Component Interconnect Express - standard expansion bus interface | PCIe Gen5: 128 GB/s bandwidth |
+| **SXM** | - | - | NVIDIA's proprietary mezzanine form factor for high-performance GPUs | SXM5: 700W TDP, requires liquid/custom cooling |
+| **NVLink** | - | GB/s | NVIDIA's high-speed GPU interconnect technology | NVLink-4: 900 GB/s (SXM), NVLink Bridge: 600 GB/s (PCIe pairs) |
+| **NVSwitch** | - | TB/s | NVIDIA's switching fabric for multi-GPU systems | 8-GPU NVSwitch: 7.2 TB/s total bandwidth |
+| **PCIe Gen5** | - | GB/s | Fifth generation PCIe standard | 128 GB/s bidirectional bandwidth |
+| **H100 PCIe** | - | W | NVIDIA H100 GPU in PCIe form factor | 350W TDP, 80GB VRAM, standard air cooling |
+| **H100 SXM** | - | W | NVIDIA H100 GPU in SXM form factor | 700W TDP, 80GB VRAM, liquid/custom cooling required |
+| **L4** | - | W | NVIDIA L4 GPU (inference-optimized) | 72W TDP, 24GB VRAM, optimal for off-grid deployments |
+
+**Hardware Selection Guidelines (Validated December 2025):**
+- **PCIe Required:** Single-GPU inference, off-grid deployments, power-constrained environments
+- **SXM Required:** Multi-GPU training (70B+), tensor-parallel inference (70B+)
+- **NVLink Required:** Multi-GPU training (70B+), tensor-parallel inference (70B+)
+- **NVLink Optional:** Data-parallel inference, fine-tuning with LoRA/QLoRA
+- **Source:** `research/inference-types/CONSOLIDATED-SUMMARY.md`
 
 ### Workload Types
 
