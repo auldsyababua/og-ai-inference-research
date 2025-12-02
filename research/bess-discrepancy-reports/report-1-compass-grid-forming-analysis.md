@@ -88,4 +88,3 @@ For the specific scenario of **1 MW natural gas generator + 0.5 MW GPU deploymen
 - **Custom integration**: Dynapower MPS-125 (4 units paralleled) + BYD Battery-Box LVL
 
 The technical evidence confirms that grid-forming capability itself imposes no power rating floor—the sizing requirement derives entirely from the physics of generator response and GPU load dynamics. For this deployment scenario, those physics unambiguously point to the larger system.
-
