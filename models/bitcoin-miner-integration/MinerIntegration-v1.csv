@@ -1,0 +1,60 @@
+Bitcoin Miner Integration Model v1.0 - Flexible Load Coordination
+Generated: 2025-12-02
+
+=== INPUT PARAMETERS ===
+Parameter,Value,Units,Description
+GPU_Ramp_kW,500,kW,GPU power step/ramp
+Ramp_Duration_s,10,seconds,Time window for GPU ramp
+Miner_Model,M60S,model,Whatsminer model (M60S or M50S++)
+Miner_Power_kW,3.3,kW,Power per miner unit
+Containers_Available,3,count,Number of mining containers available
+Container_Power_MW,1,MW,Power capacity per container
+Shedding_Strategy,Partial,strategy,Full/Partial/Staged
+Response_Time_ms,500,ms,Miner shutdown response time
+Opportunity_Cost_per_kWh,0.1,$/kWh,Economic cost of miner downtime
+
+=== MINER SPECIFICATIONS ===
+Model,Hashrate_TH_s,Power_kW,Efficiency_J_TH,Container_Capacity_Units
+M60S,184,3.3,18.5,300
+M50S++,160,3.3,22,300
+
+=== COORDINATION CALCULATIONS ===
+Output,Value,Units,Formula/Notes
+Miner_Shed_Required_kW,500,kW,Matches GPU ramp
+Units_to_Shed,152,units,Miner_Shed_Required_kW / Miner_Power_kW
+Containers_to_Shed_Partial,0.51,containers,Units_to_Shed / Container_Capacity_Units
+Containers_to_Shed_Full,1,containers,Rounded up for full container strategy
+Response_Time_s,0.5,seconds,Response_Time_ms / 1000
+Economic_Cost_per_Hour,50,$/hour,Miner_Shed_Required_kW × Opportunity_Cost_per_kWh
+Economic_Cost_per_Ramp,0.14,$,Economic_Cost_per_Hour × (Ramp_Duration_s / 3600)
+
+=== GENERATOR IMPACT ===
+Output,Value,Units,Formula/Notes
+Net_Load_Change_kW,0,kW,GPU_Ramp_kW - Miner_Shed_Required_kW
+Generator_Rated_kW,4300,kW,Example: CG260-16
+Generator_Step_Fraction,0,per unit,Net_Load_Change_kW / Generator_Rated_kW
+Generator_Step_pct,0,%,Generator_Step_Fraction × 100
+Within_Generator_Limits,TRUE,boolean,Generator_Step_pct < MaxStep_pct (16% for CG260)
+
+=== COORDINATION SUMMARY ===
+Strategy,Description
+Perfect Offset,GPU ramp perfectly offset by miner shedding - generator sees zero net change
+Response Time,500ms response acceptable for multi-second ramps (>1s)
+Economic Cost,$0.14 per ramp event (negligible for planning)
+Generator Impact,No generator step required - within all generator limits
+
+=== EXAMPLE SCENARIOS ===
+Scenario,GPU_Ramp_kW,Miner_Shed_kW,Units_to_Shed,Net_Load_kW,Cost_per_Hour
+Small Ramp (100kW),100,100,30,0,10
+Medium Ramp (500kW),500,500,152,0,50
+Large Ramp (1000kW),1000,1000,303,0,100
+Very Large (2000kW),2000,2000,606,0,200
+Limited Miners (1000kW ramp, 500kW available),1000,500,152,500,50
+
+=== NOTES ===
+- Miner power consumption: 3.3 kW per unit (M60S or M50S++)
+- Container capacity: 300 units per 1 MW container (typical)
+- Response time: 100-500ms (multi-second timescale, acceptable for ramp coordination)
+- Economic cost: Based on opportunity cost of downtime (varies with BTC price)
+- Perfect coordination: When miner shed = GPU ramp, generator sees zero net change
+

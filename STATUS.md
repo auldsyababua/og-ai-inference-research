@@ -57,12 +57,12 @@ This project models off-grid AI inference infrastructure powered by natural gas 
 - [ ] Validate generator inertia constants (5 of 6 models need TMI data)
 - [ ] Measure GPU power profiles (empirical validation needed)
 
-## Phase 3: Expansion 🔄 20% Complete
+## Phase 3: Expansion 🔄 30% Complete
 
 ### Week 5-8 Goals
 - [x] Multi-step ramp simulator (for CG260 sequences) - **Complete: CSV simulator, formulas, examples**
 - [ ] BESS sizing calculator (with reconciled recommendations)
-- [ ] Bitcoin miner integration modeling
+- [x] Bitcoin miner integration modeling - **Complete: Whatsminer M60S/M50S++ models, coordination logic, integration examples**
 - [x] Expand generator library:
   - [x] PSI Power Solutions International (4.5L, 6.7L, 10L, 13L engines) - **Engine specs extracted, genset electrical parameters require manufacturer data**
   - [ ] MTU Series 4000
