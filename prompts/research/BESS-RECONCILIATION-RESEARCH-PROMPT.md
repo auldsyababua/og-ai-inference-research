@@ -43,11 +43,13 @@ Two consolidated reports provide conflicting BESS recommendations for the same d
    - Focus on: IEEE standards, technical papers, inverter manufacturer documentation
    - Look for: Control algorithms, response times, implementation requirements
 
-**Expected Sources**:
-- IEEE 1547-2018 (interconnection standards)
-- Inverter manufacturer datasheets (SMA, ABB, Schneider, Sungrow, BYD)
-- Microgrid case studies
-- Power electronics technical papers
+**Expected Sources** (Prioritize North American):
+- IEEE 1547-2018 (interconnection standards) - **Primary**
+- UL 1741-SA (inverter standards) - **Primary**
+- Inverter manufacturer datasheets (Sungrow USA, BYD North America, Fluence, Tesla, LG Chem North America) - **Primary**
+- Global manufacturers (SMA, ABB, Schneider) if English specs available - **Secondary**
+- Microgrid case studies (North American deployments preferred) - **Primary**
+- Power electronics technical papers - **Secondary**
 
 ---
 
@@ -152,45 +154,62 @@ Two consolidated reports provide conflicting BESS recommendations for the same d
 ### Task 1: Vendor Product Research
 **Goal**: Find actual commercial products that match each recommendation
 
-**Research**:
-1. Search BYD Battery-Box LVL specifications:
+**Research** (Prioritize North American market):
+1. Search BYD Battery-Box LVL (North American version) specifications:
    - Does it support grid-forming mode?
    - What is the minimum power rating?
    - What is the cost for 50-100 kWh vs 100-200 kWh systems?
+   - UL 1741-SA compliance?
 
-2. Search Sungrow PowerStack specifications:
+2. Search Sungrow PowerStack (US market) specifications:
    - Grid-forming capability?
    - Power rating options?
    - Pricing for different sizes?
+   - UL/IEEE compliance?
 
-3. Search other commercial BESS vendors:
-   - Fluence, LG Chem, Tesla Powerwall/Megapack
-   - Smallest grid-forming BESS available?
-   - Cost comparison?
+3. Search other North American commercial BESS vendors:
+   - Fluence (US market leader)
+   - LG Chem RESU (North American models)
+   - Tesla Powerwall/Megapack (US pricing)
+   - Smallest grid-forming BESS available in North American market?
+   - Cost comparison (2024-2025 US market pricing)
+
+4. Include global vendors only if:
+   - English specifications available
+   - Products available/importable to North America
+   - Specifications meet UL/IEEE requirements
 
 ### Task 2: Technical Standard Research
 **Goal**: Understand technical requirements for grid-forming capability
 
-**Research**:
-1. IEEE 1547-2018: Grid-forming inverter requirements
-2. UL 1741-SA: Inverter standards for grid-forming
-3. Industry best practices for microgrid BESS sizing
+**Research** (North American standards focus):
+1. IEEE 1547-2018: Grid-forming inverter requirements - **Primary standard**
+2. UL 1741-SA: Inverter standards for grid-forming - **Primary standard**
+3. NEC Article 706/710: Energy storage system requirements - **Primary code**
+4. NFPA 855: BESS fire safety requirements - **Primary code**
+5. Industry best practices for microgrid BESS sizing (North American deployments) - **Primary**
+6. IEC standards (if referenced in North American deployments) - **Secondary**
 
 ### Task 3: Case Study Research
 **Goal**: Find real-world examples of small grid-forming BESS deployments
 
-**Research**:
-1. Microgrid case studies with small BESS (<200 kWh)
-2. Off-grid data center deployments with BESS
-3. Commercial/industrial grid-forming BESS installations
+**Research** (North American deployments preferred):
+1. Microgrid case studies with small BESS (<200 kWh) - **Prioritize US/Canada**
+2. Off-grid data center deployments with BESS - **Prioritize North American**
+3. Commercial/industrial grid-forming BESS installations - **Prioritize North American**
+4. Include international case studies only if:
+   - English documentation available
+   - Applicable to North American standards/requirements
+   - Technical specifications comparable
 
 ### Task 4: Cost Validation Research
 **Goal**: Validate and explain the cost difference
 
-**Research**:
-1. 2025 BESS cost data (NREL, BloombergNEF)
-2. Inverter cost breakdowns (grid-forming vs grid-following)
-3. Installation cost scaling factors
+**Research** (North American market pricing):
+1. 2025 BESS cost data (NREL US market reports, BloombergNEF US pricing) - **Primary**
+2. Inverter cost breakdowns (grid-forming vs grid-following) - **US market pricing**
+3. Installation cost scaling factors - **North American labor/material costs**
+4. Vendor quotes for North American market (BYD, Sungrow, Fluence, Tesla US pricing)
 
 ---
 
@@ -203,8 +222,12 @@ Two consolidated reports provide conflicting BESS recommendations for the same d
 3. **Cost Breakdown**: Detailed cost breakdown explaining the 10x difference (Component-by-component analysis)
 
 4. **Unified Recommendation**: Single recommendation that reconciles both reports (With clear decision criteria)
+   - **Priority**: Technical robustness over cost minimization
+   - **Scope**: North American market products and standards (with global products if English specs available)
 
 5. **Decision Framework**: When to use Buffer BESS vs Grid-Forming BESS (Decision matrix with criteria)
+   - **Bias**: Favor technically robust solutions suitable for commercial deployment
+   - **Standards**: Based on UL/IEEE/NEC requirements for North American deployments
 
 ---
 
@@ -236,6 +259,34 @@ Two consolidated reports provide conflicting BESS recommendations for the same d
 
 ---
 
+## Research Scope & Priorities
+
+### Recommendation Philosophy
+**Unified recommendation should err on the side of technical robustness.**
+- This research informs construction planning and partner selection
+- System reliability and stability are paramount
+- Cost optimization is important but secondary to technical soundness
+- Recommendations must be suitable for commercial deployment, not experimental
+
+### Geographic & Standards Focus
+**Prioritize North American market products and standards, with global products included if English specifications available.**
+
+**Primary Focus:**
+- **Standards**: UL 1741-SA, IEEE 1547-2018, NEC Article 706/710, NFPA 855
+- **Vendors**: North American suppliers (BYD North America, Sungrow USA, Fluence, Tesla, LG Chem North America)
+- **Jurisdictions**: US states mentioned in reports (Texas, Wyoming, Montana, North Dakota, West Virginia)
+
+**Secondary/Included:**
+- **Global vendors**: Include European/Asian products (BYD global, Sungrow global, etc.) if:
+  - English technical specifications available
+  - Products available in North American market
+  - Specifications comparable to North American standards
+- **International standards**: IEC standards referenced if relevant to North American deployments
+
+**Rationale**: Deployment appears North American (based on jurisdiction analysis in BESS Decision report), so North American standards and market availability are primary. Global products included for completeness if they meet North American requirements.
+
+---
+
 ## Success Criteria
 
 Research is successful when:
@@ -253,6 +304,9 @@ Research is successful when:
 - Focus on **commercial/industrial BESS** (not residential)
 - Prioritize **2024-2025 data** for cost information
 - Emphasize **practical feasibility** over theoretical limits
+- **Recommendation philosophy**: Technical robustness prioritized over cost minimization
+- **Geographic focus**: North American market products/standards primary, global products secondary (if English specs available)
+- **Standards priority**: UL 1741-SA, IEEE 1547-2018, NEC, NFPA (North American standards)
 
 ---
 
