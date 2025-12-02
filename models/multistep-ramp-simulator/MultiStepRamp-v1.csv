@@ -1,0 +1,58 @@
+Multi-Step Ramp Simulator v1.0 - CG260-16 Load Sequence
+Generated: 2025-12-01
+
+=== INPUT PARAMETERS ===
+Parameter,Value,Units,Description
+P_rated_gen_kW,4300,kW,Generator rated power (CG260-16)
+H_eff_s,5,seconds,Effective inertia constant
+R_eff_pu,0.05,per unit,Governor droop (5%)
+f_nom_Hz,60,Hz,Nominal frequency
+InitialLoad_kW,0,kW,Starting load
+InitialLoad_pct,0,%,Starting load (% of rated)
+TargetLoad_kW,2150,kW,Target load
+TargetLoad_pct,50,%,Target load (% of rated)
+
+=== CG260 LOAD STEP SEQUENCE ===
+Step,LoadStart_pct,LoadEnd_pct,StepSize_pct,RecoveryTime_s,SpeedDrop_pct
+1,0,16,16,10,8
+2,16,29,13,10,8
+3,29,39,10,10,8
+4,39,48,9,10,8
+5,48,57,9,10,8
+6,57,66,9,10,8
+7,66,75,9,10,8
+8,75,84,9,10,8
+9,84,91,7,10,8
+10,91,100,9,10,8
+
+=== SIMULATION RESULTS ===
+Step,Time_s,Load_pct,Load_kW,GeneratorOutput_kW,LoadDeficit_kW,Frequency_Hz,DeltaF_Hz,RoCoF_Hz_per_s,BESS_Energy_kWh
+0,0,0,0,0,0,60,0,0,0
+1,0,16,688,0,688,57.6,-2.4,-0.24,0
+1,10,16,688,688,0,60,0,0,1.91
+2,10,29,1247,688,559,57.6,-2.4,-0.195,2.46
+2,20,29,1247,1247,0,60,0,0,3.11
+3,20,39,1677,1247,430,57.6,-2.4,-0.15,3.44
+3,30,39,1677,1677,0,60,0,0,3.69
+4,30,48,2064,1677,387,57.6,-2.4,-0.135,3.77
+4,40,48,2064,2064,0,60,0,0,3.84
+5,40,50,2150,2064,86,57.6,-2.4,-0.09,3.86
+5,50,50,2150,2150,0,60,0,0,3.87
+
+=== SUMMARY OUTPUTS ===
+Output,Value,Units
+TotalRampTime_s,50,seconds
+NumberOfSteps,5,steps
+BESS_EnergyRequired_kWh,3.87,kWh
+BESS_PowerRequired_kW,688,kW
+MaxFrequencyDeviation_Hz,-2.4,Hz
+MaxRoCoF_Hz_per_s,-0.24,Hz/s
+FinalLoad_kW,2150,kW
+FinalLoad_pct,50,%
+
+=== NOTES ===
+- Recovery time is the stabilization period before next step
+- BESS energy calculated as integral of load deficit over time
+- Frequency response assumes instantaneous governor action (simplified)
+- Speed drop of 8% per step is maximum; actual recovery may be faster
+
