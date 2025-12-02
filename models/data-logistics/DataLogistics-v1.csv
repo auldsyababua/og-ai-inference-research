@@ -1,0 +1,8 @@
+ScenarioName,Workload_Inbound_TB_per_month,Workload_Outbound_TB_per_month,Total_TB_per_month,Starlink_Terminals,Starlink_Cost_per_terminal_per_month,Starlink_Effective_Bandwidth_Mbps,Starlink_Overhead_Factor,Starlink_Usable_TB_per_month,Starlink_Total_Cost_per_month,Starlink_Cost_per_TB,Sneakernet_Distance_miles,Sneakernet_Cost_per_mile,Sneakernet_Trips_per_month,Sneakernet_TB_per_trip,Sneakernet_Total_Cost_per_month,Sneakernet_Cost_per_TB,Fiber_Distance_miles,Fiber_Cost_per_mile,Fiber_Amortization_years,Fiber_OpEx_per_month,Fiber_Total_CapEx,Fiber_Monthly_CapEx_Amortized,Fiber_Total_Cost_per_month,Fiber_Cost_per_TB,Recommended_Mode,Cost_Savings_vs_Next_Best
+Example_100TB_Week,400,50,450,15,290,100,0.6,197.1,4350,9.67,200,1.2,4,120,960,2.13,10,50000,20,208,500000,2083,2291,5.09,Sneakernet,6.58
+Low_Volume_10TB_Month,10,1,11,1,290,100,0.6,13.14,290,26.36,200,1.2,1,120,240,21.82,10,50000,20,208,500000,2083,2291,208.27,Starlink,186.45
+Medium_Volume_100TB_Month,100,10,110,4,290,100,0.6,52.56,1160,10.55,200,1.2,1,120,240,2.18,10,50000,20,208,500000,2083,2291,20.83,Sneakernet,10.27
+High_Volume_500TB_Month,500,50,550,20,290,100,0.6,262.8,5800,10.55,200,1.2,5,120,1200,2.18,10,50000,20,208,500000,2083,2291,4.17,Sneakernet,1.99
+Very_High_Volume_1PB_Month,1000,100,1100,40,290,100,0.6,525.6,11600,10.55,200,1.2,10,120,2400,2.18,10,50000,20,208,500000,2083,2291,2.08,Sneakernet,0.10
+Close_Site_50miles,400,50,450,15,290,100,0.6,197.1,4350,9.67,50,1.2,4,120,240,0.53,50,50000,20,208,2500000,10417,10625,23.61,Sneakernet,14.08
+Far_Site_500miles,400,50,450,15,290,100,0.6,197.1,4350,9.67,500,1.2,4,120,2400,5.33,500,50000,20,208,25000000,104167,104375,231.94,Sneakernet,222.27

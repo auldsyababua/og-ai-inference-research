@@ -1,8 +1,9 @@
 # OFF-GRID AI INFERENCE RESEARCH - GAP ANALYSIS
 
-**Generated:** 2025-12-01
-**Purpose:** Identify missing data, parameter gaps, and areas requiring additional research
-**Status:** Phase 1 Analysis Complete
+**Generated:** 2025-12-01  
+**Last Updated:** 2025-12-02 (evening)  
+**Purpose:** Identify missing data, parameter gaps, and areas requiring additional research  
+**Status:** Phase 1 Analysis Complete, Updated with December 2025 Research Findings
 
 ---
 
@@ -97,10 +98,14 @@ CALCULATED OUTPUTS:
    - Calculator doesn't estimate required BESS capacity or duration
    - Need: energy storage sizing formulas
 
-5. **Data Logistics** - Not Implemented
+5. **Data Logistics** - ✅ **IMPLEMENTED** (December 2025)
    - PRD Section 3.5 defines Starlink/Sneakernet/Fiber modeling
-   - No cost/TB calculations present
-   - Need: bandwidth, cost, and workload data parameters
+   - ✅ Calculator implemented: `models/data-logistics/DataLogistics-v1.csv`
+   - ✅ Pricing validated: `research/data-logistics/CONSOLIDATED-SUMMARY.md`
+   - ✅ Parameters updated with 2025 validated pricing
+   - ✅ Sneakernet optimization framework: `docs/planning/SNEAKERNET-OPTIMIZATION-FRAMEWORK.md`
+   - ✅ Data optimization strategies: `docs/planning/DATA-OPTIMIZATION-STRATEGIES.md`
+   - **Status:** Calculator operational with validated parameters
 
 6. **Voltage Parameters** - Missing
    - Calculator models frequency (RoCoF, ΔF) but not voltage
@@ -176,19 +181,26 @@ From **Caterpillar_Gas_Genset_Library_Phase1.md** (lines 217-223):
 **What's Missing:**
 
 | GPU Phase | Power Delta (ΔP) | Duration | Ramp Characteristic | Status |
-|-----------|------------------|----------|---------------------|--------|
-| Idle → Launch | ? W | ? ms | Sharp step | ❌ Not defined |
-| Launch → Model Load | ? W | ? s | Gradual ramp | ❌ Not defined |
-| Model Load → Warmup | ? W | ? s | Sharp step | ❌ Not defined |
-| Warmup → Steady Inference | ? W | ? s | Moderate ramp | ❌ Not defined |
-| Inference → Cleanup | ? W | ? ms | Sharp drop | ❌ Not defined |
-| Cleanup → Idle | ? W | ? ms | Moderate drop | ❌ Not defined |
+|-----------|-------------------|----------|---------------------|--------|
+| Idle (cold) | ~60-80W | N/A | N/A | ✅ **Validated** (December 2025) |
+| Idle (warm) | ~60-80W | N/A | N/A | ✅ **Validated** (December 2025) |
+| Launch | ~30-50% of inference | <1s | Step | ⚠️ Estimated (no direct measurements) |
+| Model Loading | ~60-70% of inference | Seconds | Gradual ramp | ⚠️ Estimated (no direct measurements) |
+| Warmup | ~300-350W | Seconds-minutes | Gradual ramp | ✅ **Validated** (December 2025 - "hidden danger") |
+| Prefill | ~250-280W | Variable | Gradual ramp | ✅ **Validated** (December 2025) |
+| Steady-State Inference | ~220-260W | Variable | Stable | ✅ **Validated** (December 2025) |
+| Cleanup | ~60-80W | <1s | Step down | ⚠️ Estimated (no direct measurements) |
+| Teardown | ~60-80W | N/A | N/A | ⚠️ Estimated (no direct measurements) |
 
-**Example Values Needed (H100 GPU):**
-- Idle power: ~100W
-- Model loading: ~300W
-- Warmup: ~400W
-- Full inference: ~700W
+**Source:** `research/gpu-phase-research/CONSOLIDATED-SUMMARY.md` (4 research sources consolidated)
+
+**Note:** Some phase transitions (Launch, Model Loading, Cleanup, Teardown) are still estimated based on research patterns, but core power values (idle, warmup, steady-state inference) have been validated from consolidated research. The validated values differ from the original estimates shown below (e.g., idle ~60-80W vs ~100W, steady-state inference ~220-260W vs ~700W).
+
+**Original Estimates (Superseded by Research):**
+- Idle power: ~100W (superseded by validated 60-80W)
+- Model loading: ~300W (estimated, not directly measured)
+- Warmup: ~400W (superseded by validated 300-350W)
+- Full inference: ~700W (superseded by validated 220-260W)
 - Transitions: 50ms-5s depending on phase
 
 **Data Sources to Pursue:**
@@ -438,10 +450,13 @@ Compare to Starlink:
 
 ### 10.3 MEDIUM PRIORITY
 
-7. **Data Logistics Calculator**
-   - Implement Starlink/Sneakernet/Fiber cost models
-   - Create TB/month scenarios
-   - Timeline: 1 week
+7. **Data Logistics Calculator** - ✅ **COMPLETED** (December 2025)
+   - ✅ Implemented Starlink/Sneakernet/Fiber cost models
+   - ✅ Created TB/month scenarios
+   - ✅ Validated pricing from consolidated research
+   - ✅ Updated with 2025 Starlink pricing (data bucket model)
+   - **Status:** Calculator operational, parameters validated
+   - **Source:** `research/data-logistics/CONSOLIDATED-SUMMARY.md`
 
 8. **Expand Generator Library**
    - Add MTU, Cummins, Jenbacher models
@@ -471,10 +486,10 @@ Compare to Starlink:
 |---------------|--------------|----------|---------------|-------|
 | Generator Electrical Specs | 85% | HIGH | HIGH | Good base data |
 | Generator Dynamic Params | 40% | MEDIUM | MEDIUM | Need vendor data |
-| GPU Power Profiles | 20% | LOW | LOW | Needs research |
+| GPU Power Profiles | 70% | MEDIUM | MEDIUM | ✅ Validated from research (December 2025) - Some phases still estimated |
 | Control Strategies | 60% | MEDIUM | MEDIUM | Conceptual only |
 | Cost/Economics | 10% | LOW | LOW | Placeholder only |
-| Data Logistics | 30% | MEDIUM | LOW | Needs pricing |
+| Data Logistics | 90% | HIGH | HIGH | ✅ Pricing validated (December 2025) - Calculator operational |
 
 ---
 
@@ -482,14 +497,16 @@ Compare to Starlink:
 
 ### Immediate (This Week)
 1. ✅ Complete this gap analysis
-2. Create master terminology glossary
-3. Research H100 GPU power profiles (NVIDIA docs, MLPerf)
-4. Draft email to Caterpillar Applications Engineering
+2. ✅ Create master terminology glossary
+3. ✅ Research H100 GPU power profiles (NVIDIA docs, MLPerf) - **Validated from research** (December 2025)
+4. Draft email to Caterpillar Applications Engineering (optional enhancement)
+5. ✅ Create inference workload taxonomy research prompt
 
 ### Short Term (Next 2 Weeks)
-5. Implement multi-step ramp simulator in calculator
-6. Add 10 more test scenarios covering YELLOW/RED boundaries
+5. ✅ Implement multi-step ramp simulator in calculator - **Complete**
+6. ✅ Add 10 more test scenarios covering YELLOW/RED boundaries - **Complete** (35 scenarios total)
 7. Create GPU-to-Generator compatibility matrix
+8. Await inference workload taxonomy research results (4 research agents)
 
 ### Medium Term (Next Month)
 8. Obtain verified generator dynamic parameters

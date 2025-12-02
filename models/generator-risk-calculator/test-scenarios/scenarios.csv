@@ -1,0 +1,36 @@
+ScenarioName,N_GPUs,DeltaP_GPU_kW,Correlation_C,DeltaT_event_s,P_rated_gen_kW,H_eff_s,R_eff_pu,f_nom_Hz,MaxStep_pct,DeltaP_cluster_kW,RampRate_kW_per_s,StepFraction,DeltaF_over_F_pu,RoCoF_Hz_per_s,StepWithinLimit,RiskLevel,Notes
+Existing_G3520_FR_2x_GPU_Warmup,1024,0.6,0.8,1,4000,3,0.04,60,100,491.52,491.52,0.12288,-0.0049152,-0.3413333333,TRUE,GREEN,Baseline scenario - well within limits
+Existing_CG260_16_GPU_Warmup,1024,0.6,0.8,1,4300,5,0.05,60,16,491.52,491.52,0.1143069767,-0.005715348837,-0.1905116279,TRUE,GREEN,Baseline scenario - within 16% limit
+Existing_CG260_16_BTC_Container,5000,0.3,0.3,30,4300,5,0.05,60,30,450,15,0.1046511628,-0.00523255814,-0.1744186047,TRUE,GREEN,Slow ramp scenario
+Existing_G3516_1x_MidCluster,256,0.6,0.7,2,1500,4,0.04,60,100,107.52,53.76,0.07168,-0.0028672,-0.1493333333,TRUE,GREEN,Small cluster baseline
+YELLOW_CG260_50pct_MaxStep,1720,0.25,0.8,1,4300,5,0.05,60,16,344,344,0.08,-0.004,-0.1333333333,TRUE,YELLOW,50% of CG260 16% limit (8% step) - marginal
+YELLOW_CG260_75pct_MaxStep,2580,0.25,0.8,1,4300,5,0.05,60,16,516,516,0.12,-0.006,-0.2,TRUE,YELLOW,75% of CG260 16% limit (12% step) - caution zone
+YELLOW_CG260_90pct_MaxStep,3096,0.25,0.8,1,4300,5,0.05,60,16,619.2,619.2,0.144,-0.0072,-0.24,TRUE,YELLOW,90% of CG260 16% limit (14.4% step) - near limit
+RED_CG260_Overload_110pct,3027,0.25,0.8,1,4300,5,0.05,60,16,605.4,605.4,0.1408,-0.00704,-0.2346666667,FALSE,RED,110% of CG260 16% limit (17.6% step) - exceeds limit
+RED_CG260_Overload_150pct,4128,0.25,0.8,1,4300,5,0.05,60,16,825.6,825.6,0.192,-0.0096,-0.32,FALSE,RED,150% of CG260 16% limit (24% step) - severe overload
+RED_CG260_2000_GPU_Sync,2000,0.25,1.0,1,4300,5,0.05,60,16,500,500,0.1162790698,-0.005813953488,-0.1937674419,FALSE,RED,2000 GPUs worst-case correlation (C=1.0) - exceeds 16%
+YELLOW_CG170_50pct_MaxStep,780,0.25,0.8,1,1560,4,0.04,60,20,156,156,0.1,-0.005,-0.325,TRUE,YELLOW,50% of CG170 20% limit (10% step) - marginal
+YELLOW_CG170_90pct_MaxStep,1404,0.25,0.8,1,1560,4,0.04,60,20,280.8,280.8,0.18,-0.009,-0.585,TRUE,YELLOW,90% of CG170 20% limit (18% step) - near limit
+RED_CG170_Overload_110pct,686,0.25,0.8,1,1560,4,0.04,60,20,137.2,137.2,0.0879487179,-0.004397435897,-0.2923076923,FALSE,RED,110% of CG170 20% limit (22% step) - exceeds limit
+YELLOW_G3520_50pct_MaxStep,10000,0.25,0.8,1,4000,3,0.04,60,100,2000,2000,0.5,-0.02,-0.8333333333,TRUE,YELLOW,50% of G3520 100% limit (50% step) - marginal but safe
+YELLOW_G3520_90pct_MaxStep,18000,0.25,0.8,1,4000,3,0.04,60,100,3600,3600,0.9,-0.036,-1.5,TRUE,YELLOW,90% of G3520 100% limit (90% step) - near limit
+RED_G3520_Overload_110pct,11000,0.25,0.8,1,4000,3,0.04,60,100,2200,2200,0.55,-0.022,-0.9166666667,FALSE,RED,110% of G3520 100% limit (110% step) - exceeds rating
+RED_G3520_Overload_150pct,15000,0.25,0.8,1,4000,3,0.04,60,100,3000,3000,0.75,-0.03,-1.25,FALSE,RED,150% of G3520 100% limit (150% step) - severe overload
+YELLOW_G3516_50pct_MaxStep,3750,0.25,0.8,1,1500,4,0.04,60,100,750,750,0.5,-0.02,-0.625,TRUE,YELLOW,50% of G3516 100% limit (50% step) - marginal but safe
+RED_G3516_Overload_110pct,6600,0.25,0.8,1,1500,4,0.04,60,100,1320,1320,0.88,-0.0352,-1.1,FALSE,RED,110% of G3516 100% limit (110% step) - exceeds rating
+WorstCase_Correlation_C1_CG260,2752,0.25,1.0,1,4300,5,0.05,60,16,688,688,0.16,-0.008,-0.2666666667,FALSE,RED,Worst-case correlation (C=1.0) exactly at 16% limit - RED
+WorstCase_Correlation_C1_CG170,1248,0.25,1.0,1,1560,4,0.04,60,20,312,312,0.2,-0.01,-0.65,FALSE,RED,Worst-case correlation (C=1.0) exactly at 20% limit - RED
+FastRamp_HighRoCoF,1024,0.25,0.8,0.1,4300,5,0.05,60,16,204.8,2048,0.047627907,-0.002381395349,-0.3804651163,TRUE,YELLOW,Fast ramp (0.1s) creates high RoCoF - may trigger protection
+SlowRamp_LowRoCoF,1024,0.25,0.8,10,4300,5,0.05,60,16,204.8,20.48,0.047627907,-0.002381395349,-0.003804651163,TRUE,GREEN,Slow ramp (10s) - low RoCoF, well within limits
+RefinedEstimate_Realistic,1024,0.225,0.6,1,4300,5,0.05,60,16,138.24,138.24,0.0321860465,-0.001609302326,-0.05376,TRUE,GREEN,Refined estimate (0.225kW, C=0.6) - realistic operation
+RefinedEstimate_HighCorrelation,1024,0.225,0.8,1,4300,5,0.05,60,16,184.32,184.32,0.0428883721,-0.002144418605,-0.07168,TRUE,GREEN,Refined estimate with high correlation (C=0.8)
+TemperatureDerating_CG260,1024,0.25,0.8,1,3870,5,0.05,60,16,204.8,204.8,0.0528423773,-0.002642118863,-0.1056843773,TRUE,YELLOW,CG260 derated to 90% (3870kW) for high temp - marginal
+MultiplePhaseTransitions,1024,0.35,0.7,1,4300,5,0.05,60,16,250.88,250.88,0.058344186,-0.002917209302,-0.09728,TRUE,YELLOW,Multiple phase transitions (warmup spike 0.35kW) - caution
+BitcoinMiner_GPU_Coordination,5000,0.25,0.3,30,4300,5,0.05,60,30,375,12.5,0.0872093023,-0.004360465116,-0.1453488372,TRUE,GREEN,GPU ramp with miner shedding (low correlation, slow ramp)
+BitcoinMiner_GPU_Coordination_Failed,5000,0.25,0.8,1,4300,5,0.05,60,30,1000,1000,0.2325581395,-0.01162790698,-0.3879069767,FALSE,RED,Miner coordination failed - high correlation, fast ramp
+SmallCluster_CG170,128,0.25,0.8,1,1560,4,0.04,60,20,25.6,25.6,0.0164102564,-0.000820512821,-0.0533333333,TRUE,GREEN,Small cluster (128 GPUs) on CG170 - well within limits
+LargeCluster_G3520,4096,0.25,0.7,1,4000,3,0.04,60,100,716.8,716.8,0.1792,-0.007168,-0.5973333333,TRUE,GREEN,Large cluster (4096 GPUs) on G3520 - within limits
+LargeCluster_CG260_Overload,4096,0.25,0.8,1,4300,5,0.05,60,16,819.2,819.2,0.1905116279,-0.009525581395,-0.3175186047,FALSE,RED,Large cluster (4096 GPUs) on CG260 - exceeds 16% limit
+VeryLargeCluster_G3520,8192,0.25,0.6,1,4000,3,0.04,60,100,1228.8,1228.8,0.3072,-0.012288,-1.024,TRUE,YELLOW,Very large cluster (8192 GPUs) on G3520 - 30.7% step, marginal
+VeryLargeCluster_CG260_Impossible,8192,0.25,0.5,1,4300,5,0.05,60,16,1024,1024,0.2381395349,-0.01190697674,-0.3972093023,FALSE,RED,Very large cluster (8192 GPUs) on CG260 - impossible without staggering
+

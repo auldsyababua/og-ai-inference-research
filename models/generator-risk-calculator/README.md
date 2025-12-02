@@ -25,13 +25,19 @@ models/generator-risk-calculator/GeneratorRisk-v1.csv
 **Cluster Configuration:**
 - `N_GPUs` - Number of GPUs in cluster
 - `DeltaP_GPU_kW` - Per-GPU power step (kW)
-  - **Current scenarios use:** 0.6 kW (conservative estimate)
-  - **Refined estimate:** 0.2-0.25 kW (more realistic, based on validated inference power)
-  - **Recommendation:** Use 0.6 kW for worst-case planning, 0.2-0.25 kW for realistic modeling
+  - **Conservative estimate:** 0.6 kW (worst-case planning)
+  - **✅ Validated estimate:** 0.2-0.25 kW (idle to inference: 60-80W → 220-260W = 140-200W step)
+  - **Warmup step:** 0.24-0.29 kW (idle to warmup: 60-80W → 300-350W = 240-290W step)
+  - **Recommendation:** Use 0.25-0.30 kW for warmup phase (most critical), 0.2-0.25 kW for inference
+  - **Source:** `research/gpu-phase-research/CONSOLIDATED-SUMMARY.md` - Validated from 4 independent research efforts
   - See `data/gpu-profiles/GPU-Power-Profiles.md` for details
 - `Correlation_C` - Fraction transitioning together (0.0-1.0)
+  - **Conservative:** 0.9-1.0 (Tensor Parallelism worst-case)
+  - **✅ Validated typical:** 0.5-0.7 (General Inference)
+  - **Best-case:** 0.3-0.5 (Data Parallelism)
   - **Current scenarios use:** 0.8 (worst-case synchronous warmup)
-  - **Refined estimate:** 0.3-0.7 (typical operation range)
+  - **Recommendation:** Use 0.9 for conservative generator design, 0.5-0.7 for typical operation
+  - **Source:** `research/gpu-phase-research/CONSOLIDATED-SUMMARY.md`
 - `DeltaT_event_s` - Transition time window (seconds)
 
 **Generator Configuration:**
@@ -85,7 +91,11 @@ models/generator-risk-calculator/GeneratorRisk-v1.csv
 - CG260 (4300 kW, 16% max first step)
 - Result: **GREEN** - 4.3% step, well within limits (more realistic)
 
-**Note:** Refined estimates show 62.5% lower power steps, indicating current conservative estimates provide significant safety margin but may lead to over-engineering. See `docs/POWER-PROFILE-UPDATE-SUMMARY.md` for details.
+**Note:** ✅ **Validated estimates** show 58-67% lower power steps than conservative estimates (0.2-0.25 kW vs 0.6 kW), indicating conservative estimates provide significant safety margin but may lead to over-engineering. 
+
+**⚠️ Critical Finding:** Warmup phase is "hidden danger" with 300-350W sustained (86-100% of TDP) for 10-60 seconds - most likely phase to trigger generator overload. Use 0.25-0.30 kW for warmup step calculations.
+
+**Source:** `research/gpu-phase-research/CONSOLIDATED-SUMMARY.md` - Validated from 4 independent research efforts
 
 ### Scenario 3: CG260 + Bitcoin Container
 - 5000 GPUs × 0.3 kW × 0.3 correlation over 30s

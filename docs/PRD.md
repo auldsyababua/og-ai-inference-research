@@ -1,5 +1,8 @@
 # **Compute Refinery Modeling PRD (Working Draft)**
 
+**Last Updated:** 2025-12-02  
+**Status:** Updated with validated research findings (GPU Phase Research, Data Logistics Pricing)
+
 ## **1\. Overview**
 
 This document serves as an evolving specification for a calculator and modeling toolkit that captures the behavior, constraints, and economics of off-grid compute sites powered by variable or constrained energy sources. It tracks open questions, completed clarifications, definitions, and modeling requirements.
@@ -26,15 +29,31 @@ Although physics scale cleanly, correlation risk grows with cluster size. This d
 
 ## **3\. What We Still Need to Cover**
 
-### **3.1 Quantifying Worst-Case kW/s Ramps at Cluster Scale**
+### **3.1 Quantifying Worst-Case kW/s Ramps at Cluster Scale** - ✅ **PARTIALLY RESOLVED** (December 2025)
 
-* Define per-GPU power step sizes and timing for each phase (launch, model load, warmup, steady-state, teardown).
+**Status:** Power step sizes and correlation profiles validated from research. Ramp rates show disagreement.
 
-* Define correlation profiles (high, medium, low) and how they affect aggregate ramps.
+* ✅ **Per-GPU power step sizes:** Validated from consolidated research
+  * Idle → Prefill: +0.15-0.25 kW (150-250ms, rapid ramp)
+  * Model Load → Warmup: +0.10-0.18 kW (1-5s, sharp step)
+  * Decode → Idle: -0.15 to -0.20 kW (<50ms, instant drop)
+  * **⚠️ Critical:** Warmup phase is "hidden danger" - 300-350W sustained (86-100% of TDP) for 10-60 seconds
+  * **Source:** `research/gpu-phase-research/CONSOLIDATED-SUMMARY.md`
 
-* Express worst-case ramps in kW/s for different cluster sizes (e.g., 10, 100, 1000+ GPUs).
+* ✅ **Correlation profiles:** Validated ranges
+  * Tensor Parallelism: 0.9-1.0 (worst-case)
+  * General Inference: 0.5-0.7 (typical)
+  * Data Parallelism: 0.3-0.5 (best-case)
+  * **Source:** `research/gpu-phase-research/CONSOLIDATED-SUMMARY.md`
 
-* Identify which phases dominate worst-case behavior.
+* ⚠️ **Ramp rates:** Disagreement exists
+  * Per-GPU typical: 0.8-1.5 kW/s (Claude calculation)
+  * Per-GPU worst-case: 3-4 kW/s (Perplexity estimate)
+  * Cluster-level synchronized: 10 kW/s (Gemini measurement)
+  * **Recommendation:** Use 10 kW/s for 8-GPU cluster synchronized startup (conservative)
+  * **Source:** `research/gpu-phase-research/CONSOLIDATED-SUMMARY.md`
+
+* ✅ **Worst-case phase:** Warmup phase dominates worst-case behavior (sustained near-peak power)
 
 ### **3.2 Correlation Dynamics**
 

@@ -1,8 +1,9 @@
 # GPU POWER PROFILES - DOCUMENTATION
 
-**Version:** 2.0  
+**Version:** 2.1  
 **Last Updated:** 2025-12-02  
-**Status:** Refined modeling profiles based on validated research data and workload characteristics
+**Status:** Updated with consolidated research findings from 4 independent research efforts  
+**Primary Source:** `research/gpu-phase-research/CONSOLIDATED-SUMMARY.md`
 
 ---
 
@@ -75,29 +76,40 @@ The NVIDIA Data Center GPU Manager (DCGM) provides fleet-wide monitoring and man
 
 | Phase | Estimated Power | Duration | Confidence | Notes |
 |-------|----------------|----------|------------|-------|
-| **Idle** | 60-80 W | Continuous | Medium | Refined estimate based on research; direct measurement needed |
-| **Launch** | 85-140 W | 1-5 s | Medium | Inferred: 30-50% of inference (system overhead) |
-| **Model Load** | 170-200 W | 10-60 s | Medium | Inferred: 60-70% of inference (memory-intensive, limited compute) |
-| **Warmup** | 250-280 W | 5-30 s | High | Validated: 70-80% of TDP (initial inference passes) |
-| **Steady-State Inference** | 250-280 W | Continuous | High | ✅ **VALIDATED** - From academic research (70-80% of 350W TDP) |
+| **Idle (Cold)** | 35-45 W | Continuous | Medium | System powered, no model loaded (from consolidated research) |
+| **Idle (Warm)** | 60-80 W | Continuous | **High** | Model loaded, KV cache active (✅ validated from multiple sources) |
+| **Launch** | 85-140 W | <1 s | Medium | Inferred: 30-50% of inference (system overhead) |
+| **Model Load** | 170-200 W | 10-60 s | Medium | Inferred: 60-70% of inference (memory-intensive, gradual ramp) |
+| **Warmup** | 300-350 W | 10-60 s | Medium-High | ⚠️ **Hidden danger** - Sustained near-peak (86-100% of TDP) |
+| **Prefill** | 300-330 W | 200-500 ms | **High** | Compute-bound spike (86-94% of TDP, ✅ validated) |
+| **Decode (Steady-State)** | 220-260 W | Continuous | **High** | ✅ **VALIDATED** - Memory-bound plateau (63-74% of TDP) |
+| **Peak** | 310-350 W | Rare | **High** | Hard ceiling, rarely reached (89-100% of TDP) |
 | **Cleanup** | 85-200 W | 1-5 s | Medium | Inferred: Resource de-allocation |
 | **Teardown** | 60-100 W | 1-3 s | Medium | Inferred: Final shutdown |
 
 ### Power Step Estimates (Refined)
 
-| Transition | ΔP (per GPU) | Transition Time | Confidence | Notes |
-|-----------|--------------|-----------------|------------|-------|
-| Idle → Launch | 25-60 W | 50-500 ms | Medium | Refined: Based on idle (60-80W) → launch (85-140W) |
-| Launch → Model Load | 30-115 W | 1-10 s | Medium | Refined: Based on launch (85-140W) → model load (170-200W) |
-| Model Load → Warmup | 50-110 W | 1-5 s | Medium | Refined: Based on model load (170-200W) → warmup (250-280W) |
-| Warmup → Inference | 0-30 W | 1-10 s | High | Refined: Warmup ≈ inference (stabilization) |
-| Inference → Cleanup | -80 to -195 W | 50-500 ms | Medium | Refined: Based on inference (250-280W) → cleanup (85-200W) |
-| Cleanup → Idle | -25 to -140 W | 50-500 ms | Medium | Refined: Based on cleanup (85-200W) → idle (60-80W) |
+| Transition | ΔP (per GPU) | Ramp Rate | Duration | Confidence | Notes |
+|-----------|--------------|-----------|----------|------------|-------|
+| **Idle → Prefill** | +0.15-0.25 kW | 10 kW/s (cluster) | 150-250 ms | Medium-High | ⚠️ Critical transition - rapid ramp |
+| **Idle → Launch** | +0.05-0.10 kW | Gradual | <1 s | Medium | System initialization |
+| **Launch → Model Load** | +0.03-0.06 kW | Gradual | 1-10 s | Medium | Memory-intensive, gradual ramp |
+| **Model Load → Warmup** | +0.10-0.18 kW | 3-4 kW/s (per-GPU) | 1-5 s | Medium | ⚠️ Significant step - warmup is "hidden danger" |
+| **Warmup → Decode** | -0.05 to -0.10 kW | Gradual | 200-500 ms | Medium | Prefill spike → steady decode |
+| **Decode → Idle** | -0.15 to -0.20 kW | <50 ms (instant) | <50 ms | **High** | ⚠️ Instant drop - load rejection risk |
+| **Inference → Cleanup** | -0.08 to -0.20 kW | <50 ms | 50-500 ms | Medium | Resource de-allocation |
+| **Cleanup → Idle** | -0.03 to -0.12 kW | <50 ms | 50-500 ms | Medium | Final shutdown |
 
 **Key Assumption (Refined):** Per-GPU power step during warmup phase: **0.2-0.25 kW** (refined from 0.6 kW based on validated inference power levels)
 
 **Previous Assumption:** 0.6 kW (conservative, may overestimate)
-**Refined Estimate:** 0.2-0.25 kW (more realistic based on validated steady-state inference: 250-280W vs. idle: 60-80W = 170-220W step)
+**Refined Estimate:** 0.2-0.25 kW (more realistic based on validated steady-state inference: 220-260W decode vs. idle: 60-80W = 140-200W step)
+
+**⚠️ Critical Finding from Consolidated Research:**
+- **Warmup phase is "hidden danger"** - Sustained 300-350W (86-100% of TDP) for 10-60 seconds
+- Most likely phase to trigger generator overload
+- Power step from idle to warmup: **0.24-0.29 kW** (300-350W - 60-80W)
+- Conservative design should use **0.25-0.30 kW** for warmup step calculations
 
 ---
 
@@ -146,14 +158,25 @@ The NVIDIA Data Center GPU Manager (DCGM) provides fleet-wide monitoring and man
 
 **Status:** ✅ **MODELING ASSUMPTIONS** - Based on research findings, suitable for planning and risk assessment
 
-| Scenario | Estimated Correlation (C) | Notes |
-|----------|--------------------------|-------|
-| **Synchronous Warmup** | 0.7-0.9 | Many GPUs starting simultaneously (worst case) |
-| **Staggered Launch** | 0.3-0.5 | Scheduler spreads transitions over time |
-| **Random Workloads** | 0.1-0.3 | Independent job scheduling |
-| **Batch Inference** | 0.5-0.7 | Similar workloads scheduled together |
+| Scenario | Estimated Correlation (C) | Confidence | Notes |
+|----------|--------------------------|------------|-------|
+| **Tensor Parallelism** | 0.9-1.0 | Medium-High | Worst-case - all GPUs synchronized (✅ validated) |
+| **Synchronous Warmup** | 0.7-0.9 | Medium-High | Many GPUs starting simultaneously (worst case) |
+| **General Inference** | 0.5-0.7 | Medium | Typical operation range (✅ validated) |
+| **Batch Inference** | 0.5-0.7 | Medium | Similar workloads scheduled together |
+| **Pipeline Parallelism** | 0.3-0.5 | Medium | Partial synchronization (✅ validated) |
+| **Data Parallelism** | 0.3-0.5 | Medium | Independent processing (✅ validated) |
+| **Staggered Launch** | 0.3-0.5 | Medium | Scheduler spreads transitions over time |
+| **Random Workloads** | 0.1-0.3 | Low | Independent job scheduling |
 
 **Current Calculator Assumption:** C = 0.8 for worst-case scenarios
+
+**✅ Validated from Consolidated Research:**
+- **Conservative design:** C = 0.9-1.0 (Tensor Parallelism worst-case)
+- **Typical operation:** C = 0.5-0.7 (General Inference)
+- **Best-case:** C = 0.3-0.5 (Data Parallelism)
+
+**Recommendation:** Use C = 0.9 for conservative generator design (worst-case Tensor Parallelism)
 
 ### Cluster Power Step Calculation
 
@@ -222,19 +245,25 @@ RampRate = ΔP_cluster / Δt_event
 ### Current Validation Status
 
 **✅ Validated (High Confidence):**
-- **Steady-state inference power:** 250-280W (70-80% of TDP) - Validated from academic research
+- **Steady-state decode power:** 220-260W (63-74% of TDP) - ✅ Validated from multiple sources
+- **Prefill power:** 300-330W (86-94% of TDP) - ✅ Validated
+- **Warm idle power:** 60-80W (17-23% of TDP) - ✅ Validated from multiple sources
 - **TDP:** 350W PCIe, 700W SXM - Manufacturer specifications
+- **Peak power:** 310-350W (89-100% of TDP) - ✅ Validated
 
-**⚠️ Refined Estimates (Medium Confidence):**
-- **Idle power:** 60-80W - Refined from research, not directly measured
-- **Phase transitions:** Inferred from workload characteristics and validated steady-state
+**⚠️ Refined Estimates (Medium-High Confidence):**
+- **Warmup power:** 300-350W (86-100% of TDP) - ⚠️ **Hidden danger** - Sustained near-peak for 10-60s
+- **Cold idle power:** 35-45W (10-13% of TDP) - Inferred from A100 data
+- **Model loading power:** 170-200W (49-57% of TDP) - Inferred from workload characteristics
 - **Power steps:** 0.2-0.25 kW (refined from 0.6 kW) - Based on validated inference power
+- **Ramp rates:** 0.8-1.5 kW/s (per-GPU typical), 10 kW/s (cluster synchronized) - Disagreement exists, use 10 kW/s for conservative design
 
 **❌ Still Needs Measurement (Low Confidence):**
-- **Exact idle power** - Direct measurement needed
-- **Phase transition timing** - Power traces needed
-- **Correlation coefficients** - Cluster-level measurements needed
-- **Ramp rates** - External metering needed
+- **Exact cold idle power** - Direct H100 measurement needed (currently inferred from A100)
+- **Phase transition timing** - Power traces needed for exact durations
+- **Ramp rates** - Disagreement exists (0.8-1.5 kW/s vs 10 kW/s) - External metering needed to resolve
+- **Model-specific variations** - Power profiles for different model sizes (7B vs 70B)
+- **Framework-specific profiles** - vLLM vs TGI vs TensorRT-LLM comparisons
 
 ### Planned Empirical Validation
 
@@ -242,12 +271,15 @@ RampRate = ΔP_cluster / Δt_event
 
 | Parameter | Current Refined Estimate | Confidence | Future Validation Method |
 |-----------|------------------------|------------|-------------------------|
-| **H100 PCIe idle power** | 60-80W (refined) | Medium | External power meter (Yokogawa WT5000) or MLPerf/academic papers |
-| **H100 PCIe power step** | 0.2-0.25 kW (refined) | Medium | Characterize actual idle→inference transition |
-| **Steady-state inference** | 250-280W | High | ✅ Validated from academic research |
-| **Model loading power** | 170-200W (inferred) | Medium | Characterize specific models (Llama, Mistral, etc.) |
-| **Multi-GPU correlation** | 0.3-0.7 (estimated) | Medium | Extract from MLPerf/academic papers or measure cluster-level |
-| **Ramp rates (kW/s)** | 3-4 kW/s per GPU (estimated) | Low | External metering with <10ms sampling |
+| **H100 PCIe idle (warm)** | 60-80W | **High** | ✅ Validated from multiple sources |
+| **H100 PCIe idle (cold)** | 35-45W | Medium | Inferred from A100 data, direct measurement needed |
+| **H100 PCIe power step** | 0.2-0.25 kW (idle→inference) | Medium-High | Based on validated inference (220-260W) vs idle (60-80W) |
+| **Steady-state decode** | 220-260W | **High** | ✅ Validated from multiple sources |
+| **Prefill power** | 300-330W | **High** | ✅ Validated |
+| **Warmup power** | 300-350W | Medium-High | ⚠️ Hidden danger - sustained near-peak |
+| **Model loading power** | 170-200W | Medium | Inferred from workload characteristics |
+| **Multi-GPU correlation** | 0.3-0.7 (typical), 0.9-1.0 (worst-case) | Medium-High | ✅ Validated ranges from research |
+| **Ramp rates (kW/s)** | 0.8-1.5 kW/s (per-GPU), 10 kW/s (cluster) | Medium | Disagreement exists - use 10 kW/s for conservative design |
 
 ### Future Measurement Plan
 
@@ -314,9 +346,10 @@ The generator risk calculator uses these estimated values:
    - `docs/nvidia-manuals/NVML-API-Reference-Guide.pdf` - NVML API for power capping and monitoring
 3. **Monitoring APIs:**
    - `docs/nvidia-manuals/NVIDIA-DCGM-User-Guide.md` - DCGM for fleet-wide GPU monitoring
-4. **GPU-Generator Stability Research:** `research/gpu-generator-stability/GPU-GENERATOR-STABILITY-CONSOLIDATED-ANALYSIS.md`
-5. **Perplexity Research Findings:** `research/gpu-generator-stability/perplexity-research/research-findings.md`
-6. **Remaining Research Gaps:** `research/REMAINING-RESEARCH-GAPS.md`
+4. **GPU Phase Research (Consolidated):** `research/gpu-phase-research/CONSOLIDATED-SUMMARY.md` - ✅ **Primary source** - Validated parameters from 4 independent research efforts
+5. **GPU-Generator Stability Research:** `research/gpu-generator-stability/GPU-GENERATOR-STABILITY-CONSOLIDATED-ANALYSIS.md`
+6. **Perplexity Research Findings:** `research/gpu-generator-stability/perplexity-research/research-findings.md`
+7. **Remaining Research Gaps:** `research/REMAINING-RESEARCH-GAPS.md`
 
 **Note:** The NVIDIA manuals provide hardware specifications, power management APIs (NVML), and monitoring tools (DCGM), but **do not provide empirical power profiles** for inference workloads. 
 

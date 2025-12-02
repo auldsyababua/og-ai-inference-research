@@ -1,9 +1,10 @@
 # TERMINOLOGY GLOSSARY
 **Off-Grid AI Inference Research Project**
 
-**Version:** 1.0
-**Last Updated:** 2025-12-01
-**Purpose:** Standardized terminology for all project documents
+**Version:** 1.1
+**Last Updated:** 2025-12-02
+**Purpose:** Standardized terminology for all project documents  
+**Status:** Updated with validated parameters from consolidated research (December 2025)
 
 ---
 
@@ -329,9 +330,11 @@
 ```
 "The CG260-16 generator has an inertia constant H = 5 seconds and governor
 droop R = 4% (0.04 p.u.). When a cluster of 1024 GPUs with correlation C = 0.8
-transitions at ΔP_gpu = 0.6 kW per GPU, the cluster power step is:
+transitions at ΔP_gpu = 0.25 kW per GPU (validated warmup step), the cluster power step is:
 
-ΔP_cluster = 0.8 × 1024 × 0.6 = 491.52 kW
+ΔP_cluster = 0.8 × 1024 × 0.25 = 204.8 kW
+
+**Note:** Conservative estimate uses 0.6 kW (491.52 kW cluster step), but validated research shows 0.2-0.25 kW for inference (0.25-0.30 kW for warmup phase).
 
 This represents a step fraction of 491.52 kW / 4300 kW = 11.4%, which is
 within the CG260's max step limit of 16% for the first load step."
