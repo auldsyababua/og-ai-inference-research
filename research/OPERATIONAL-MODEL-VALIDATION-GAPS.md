@@ -90,17 +90,29 @@ The operational model demonstrates **feasibility** of a no-BESS control scheme u
 ### 2.2 What We Know
 
 - **GPU power phases:** We have estimated profiles (idle → launch → model load → warmup → inference)
-- **Power capping:** NVIDIA GPUs support power limits, but dynamic control during inference is unclear
+- **Power capping:** NVIDIA GPUs support power limits via NVML API (`nvmlDeviceSetPowerManagementLimit()`)
+  - **Reference:** `docs/nvidia-manuals/NVML-API-Reference-Guide.pdf`
+  - NVML provides APIs for dynamic power limit adjustment during runtime
+  - Power limit constraints available via `nvmlDeviceGetPowerManagementLimitConstraints()`
+  - However, dynamic control **during active inference** (not just idle/preload) needs validation
 - **Preload power:** Estimated at 200-300W for PCIe, 400-600W for SXM (30-40% of TDP)
+- **Monitoring:** DCGM can be used to monitor power-aware scheduler behavior
+  - **Reference:** `docs/nvidia-manuals/NVIDIA-DCGM-User-Guide.md`
 
 ### 2.3 Research Needed
 
 **Priority:** HIGH  
 **Type:** Technical documentation review + empirical testing  
 **Questions:**
-- NVIDIA documentation on dynamic power capping during inference
+- ✅ NVIDIA documentation on power capping APIs: `docs/nvidia-manuals/NVML-API-Reference-Guide.pdf` (collected)
+- ❓ Dynamic power capping **during active inference** (not just idle/preload) - needs empirical validation
 - MLPerf or other benchmarks showing preload power profiles
 - Feasibility of checkpoint/hold in common inference frameworks
+
+**Available Resources:**
+- NVML API Reference Guide provides power management APIs (`nvmlDeviceSetPowerManagementLimit()`, `nvmlDeviceGetPowerManagementLimitConstraints()`)
+- DCGM User Guide provides monitoring tools for power-aware scheduler behavior
+- **Gap:** Manuals provide APIs but do not provide empirical power profiles or validation of dynamic power capping during inference workloads
 
 ---
 

@@ -192,7 +192,9 @@ From **Caterpillar_Gas_Genset_Library_Phase1.md** (lines 217-223):
 - Transitions: 50ms-5s depending on phase
 
 **Data Sources to Pursue:**
-- NVIDIA technical documentation
+- ✅ NVIDIA technical documentation (collected - see `docs/nvidia-manuals/`)
+  - Provides: Hardware specs (TDP: 350W), power management APIs (NVML), monitoring tools (DCGM)
+  - Does NOT provide: Empirical power profiles for inference workloads (idle → launch → model load → warmup → inference)
 - MLPerf inference benchmark power traces
 - Data center operator empirical measurements
 - GPU monitoring tools (nvidia-smi power logs)

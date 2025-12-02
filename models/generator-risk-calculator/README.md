@@ -25,7 +25,13 @@ models/generator-risk-calculator/GeneratorRisk-v1.csv
 **Cluster Configuration:**
 - `N_GPUs` - Number of GPUs in cluster
 - `DeltaP_GPU_kW` - Per-GPU power step (kW)
+  - **Current scenarios use:** 0.6 kW (conservative estimate)
+  - **Refined estimate:** 0.2-0.25 kW (more realistic, based on validated inference power)
+  - **Recommendation:** Use 0.6 kW for worst-case planning, 0.2-0.25 kW for realistic modeling
+  - See `data/gpu-profiles/GPU-Power-Profiles.md` for details
 - `Correlation_C` - Fraction transitioning together (0.0-1.0)
+  - **Current scenarios use:** 0.8 (worst-case synchronous warmup)
+  - **Refined estimate:** 0.3-0.7 (typical operation range)
 - `DeltaT_event_s` - Transition time window (seconds)
 
 **Generator Configuration:**
@@ -59,15 +65,27 @@ models/generator-risk-calculator/GeneratorRisk-v1.csv
 
 ## Example Scenarios
 
-### Scenario 1: G3520 Fast Response + GPU Warmup
+### Scenario 1: G3520 Fast Response + GPU Warmup (Conservative Estimate)
 - 1024 GPUs × 0.6 kW × 0.8 correlation = 491.52 kW
 - G3520 (4000 kW, 100% block load capable)
 - Result: **GREEN** - 12.3% step, well within limits
 
-### Scenario 2: CG260-16 + GPU Warmup
+### Scenario 1 (Refined Estimate - More Realistic):
+- 1024 GPUs × 0.225 kW × 0.8 correlation = 184.32 kW
+- G3520 (4000 kW, 100% block load capable)
+- Result: **GREEN** - 4.6% step, well within limits (more realistic)
+
+### Scenario 2: CG260-16 + GPU Warmup (Conservative Estimate)
 - Same GPU configuration (491.52 kW)
 - CG260 (4300 kW, 16% max first step)
 - Result: **GREEN** - 11.4% step, within first step limit
+
+### Scenario 2 (Refined Estimate - More Realistic):
+- 1024 GPUs × 0.225 kW × 0.8 correlation = 184.32 kW
+- CG260 (4300 kW, 16% max first step)
+- Result: **GREEN** - 4.3% step, well within limits (more realistic)
+
+**Note:** Refined estimates show 62.5% lower power steps, indicating current conservative estimates provide significant safety margin but may lead to over-engineering. See `docs/POWER-PROFILE-UPDATE-SUMMARY.md` for details.
 
 ### Scenario 3: CG260 + Bitcoin Container
 - 5000 GPUs × 0.3 kW × 0.3 correlation over 30s

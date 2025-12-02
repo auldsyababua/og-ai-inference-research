@@ -153,9 +153,7 @@ Documentation is complete and ready for:
 
 ## Related Documents
 
-- **`COLLECTION-COMPLETE.md`** - Comprehensive collection summary
-- **`COLLECTION-STATUS.md`** - Quick status reference
-- **`MANUAL-REQUIREMENTS.md`** - Original browser agent prompt (completed)
+- **`COLLECTION-STATUS.md`** - Collection status and file inventory (current status)
 
 ---
 

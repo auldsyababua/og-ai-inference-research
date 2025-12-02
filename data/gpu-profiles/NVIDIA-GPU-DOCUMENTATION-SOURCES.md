@@ -1,7 +1,7 @@
 # NVIDIA GPU Documentation Sources
 
 **Date:** 2025-12-02  
-**Status:** Research in Progress  
+**Status:** Documentation Collected ✅  
 **Purpose:** Centralized list of NVIDIA GPU documentation sources for field deployment
 
 ---
@@ -44,13 +44,13 @@ Based on research analysis, the following GPUs are under consideration:
 - Cooling: Passive heat sink (requires system airflow)
 
 **Key Documentation Needed:**
-- [ ] Datasheet/Technical Specifications PDF
-- [ ] User Guide/Installation Manual
-- [ ] Power Management Guide
-- [ ] Thermal Design Guide
-- [ ] NVLink Configuration Guide
-- [ ] MIG (Multi-Instance GPU) Configuration Guide
-- [ ] Driver and Software Requirements
+- [x] Datasheet/Technical Specifications PDF → `docs/nvidia-manuals/H100-PCIe-Product-Brief-PB-11133.pdf` ✅ COLLECTED
+- [ ] User Guide/Installation Manual → Installation is OEM responsibility (not available as standalone NVIDIA doc)
+- [x] Power Management Guide → `docs/nvidia-manuals/NVML-API-Reference-Guide.pdf` ✅ COLLECTED
+- [ ] Thermal Design Guide → Thermal design is server manufacturer responsibility (not available as standalone NVIDIA doc)
+- [ ] NVLink Configuration Guide → Covered in architecture whitepaper and DGX guides
+- [x] MIG (Multi-Instance GPU) Configuration Guide → `docs/nvidia-manuals/H100-MIG-Configuration-Guide.md` ✅ COLLECTED
+- [ ] Driver and Software Requirements → Available on NVIDIA Developer Portal (public)
 
 **Search Terms:**
 - "H100 PCIe datasheet"
@@ -69,12 +69,12 @@ Based on research analysis, the following GPUs are under consideration:
 - Cooling: Integrated with HBM3 (requires liquid cooling)
 
 **Key Documentation Needed:**
-- [ ] HGX H100 System Design Guide
-- [ ] SXM5 Module Specifications
-- [ ] Liquid Cooling Requirements
-- [ ] NVSwitch Configuration Guide
-- [ ] Multi-GPU Setup Guide
-- [ ] Power and Thermal Design Guide
+- [x] HGX H100 System Design Guide → `docs/nvidia-manuals/dgxh100-user-guide.pdf` ✅ COLLECTED (DGX H100 guide)
+- [x] SXM5 Module Specifications → Covered in `docs/nvidia-manuals/NVIDIA H100 GPU Whitepaper.pdf` ✅ COLLECTED
+- [x] Liquid Cooling Requirements → Covered in DGX guides ✅ COLLECTED
+- [ ] NVSwitch Configuration Guide → Covered in architecture whitepaper and DGX guides
+- [x] Multi-GPU Setup Guide → `docs/nvidia-manuals/dgxh100-user-guide.pdf` ✅ COLLECTED
+- [x] Power and Thermal Design Guide → Covered in DGX guides and NVML API reference ✅ COLLECTED
 
 **Search Terms:**
 - "H100 SXM5 datasheet"
@@ -174,16 +174,16 @@ Based on research analysis, the following GPUs are under consideration:
 ## Critical Documentation Needs for Field Deployment
 
 ### Power Management
-- [ ] Power capping capabilities and APIs
-- [ ] Dynamic power management during inference
-- [ ] Power profile modes (performance vs efficiency)
-- [ ] Power limit configuration methods
+- [x] Power capping capabilities and APIs → `docs/nvidia-manuals/NVML-API-Reference-Guide.pdf` ✅ COLLECTED
+- [x] Dynamic power management during inference → NVML API provides `nvmlDeviceSetPowerManagementLimit()` ✅ COLLECTED
+- [ ] Power profile modes (performance vs efficiency) → Not explicitly documented in collected manuals
+- [x] Power limit configuration methods → NVML API reference covers power limit configuration ✅ COLLECTED
 
 ### Thermal Management
-- [ ] Operating temperature ranges
-- [ ] Thermal throttling behavior
-- [ ] Cooling requirements (air vs liquid)
-- [ ] Thermal design power (TDP) specifications
+- [x] Operating temperature ranges → Covered in product briefs and DGX guides ✅ COLLECTED
+- [x] Thermal throttling behavior → `docs/nvidia-manuals/NVML-API-Reference-Guide.pdf` (thermal monitoring APIs) ✅ COLLECTED
+- [x] Cooling requirements (air vs liquid) → Covered in product briefs and DGX guides ✅ COLLECTED
+- [x] Thermal design power (TDP) specifications → `docs/nvidia-manuals/H100-PCIe-Product-Brief-PB-11133.pdf` (350W TDP) ✅ COLLECTED
 
 ### Installation and Configuration
 - [ ] Server compatibility requirements
@@ -193,10 +193,10 @@ Based on research analysis, the following GPUs are under consideration:
 - [ ] Firmware update procedures
 
 ### Performance Tuning
-- [ ] MIG configuration for inference workloads
-- [ ] NVLink setup for multi-GPU systems
-- [ ] Memory bandwidth optimization
-- [ ] Inference-specific optimizations
+- [x] MIG configuration for inference workloads → `docs/nvidia-manuals/H100-MIG-Configuration-Guide.md` ✅ COLLECTED
+- [x] NVLink setup for multi-GPU systems → Covered in architecture whitepaper and DGX guides ✅ COLLECTED
+- [x] Memory bandwidth optimization → Covered in architecture whitepaper ✅ COLLECTED
+- [ ] Inference-specific optimizations → General optimization guidance available, workload-specific tuning requires empirical testing
 
 ---
 
@@ -209,5 +209,7 @@ Based on research analysis, the following GPUs are under consideration:
 ---
 
 **Last Updated:** 2025-12-02  
-**Status:** Research in Progress - Documentation sources identified, direct links pending
+**Status:** ✅ Documentation Collected - All available NVIDIA H100 documentation has been collected (8 files, ~83MB). See `docs/nvidia-manuals/COLLECTION-STATUS.md` for details.
+
+**Note:** The collected manuals provide hardware specifications, power management APIs (NVML), and monitoring tools (DCGM), but do NOT provide empirical power profiles for inference workloads. Empirical validation is still needed for per-phase power measurements (idle → launch → model load → warmup → inference).
 
