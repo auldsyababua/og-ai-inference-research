@@ -1,0 +1,8 @@
+name: sf_env
+channels:
+  - snowflake
+dependencies:
+  # Versions tested and confirmed working during RAEP Phase 1 investigation
+  - streamlit=1.35.0  # Pin to prevent auto-upgrades
+  - matplotlib=3.10.6  # Required for visualizations
+  - seaborn=0.13.2     # Required for advanced charts
