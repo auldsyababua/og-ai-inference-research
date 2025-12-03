@@ -43,3 +43,8 @@ yarn-error.log
 # Extracted text from PDFs
 /tmp/
 
+.streamlit/secrets.toml
+
+# Snowflake private keys
+rsa_key.pem
+*.pem

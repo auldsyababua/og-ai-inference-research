@@ -1,0 +1,226 @@
+{
+  "review_id": "2025-12-03-001",
+  "created_at": "2025-12-03T22:46:01.508Z",
+  "updated_at": "2025-12-03T22:49:46.110Z",
+  "status": "approved",
+  "rounds": [
+    {
+      "review_id": "2025-12-03-001",
+      "timestamp": "2025-12-03T22:47:11.149Z",
+      "status": "needs_changes",
+      "round": 1,
+      "design_compliance": {
+        "follows_architecture": true,
+        "major_violations": []
+      },
+      "comments": [
+        {
+          "type": "specific",
+          "file": "tools/deploy_to_snowflake_streamlit.py",
+          "line": 161,
+          "severity": "major",
+          "category": "architecture",
+          "comment": "The CREATE STREAMLIT command uses the 'FROM' syntax which is correct, but the comment about Snowflake automatically detecting environment.yml should be validated. The documentation should clarify that Snowflake reads environment.yml from the root of the stage, not from any subdirectory.",
+          "suggested_fix": "Add explicit documentation in the comment confirming the expected behavior: '# Snowflake automatically detects and uses environment.yml from stage root during CREATE'"
+        },
+        {
+          "type": "specific",
+          "file": "tools/deploy_to_snowflake_streamlit.py",
+          "line": 149,
+          "severity": "critical",
+          "category": "architecture",
+          "comment": "The DROP + CREATE pattern is correct for forcing Snowflake to re-read environment.yml, but the comment should emphasize this is the ONLY reliable way to update packages. The 1-2 minute downtime should be more prominently documented in the code.",
+          "suggested_fix": "Enhance the comment to be more explicit: '# CRITICAL: DROP + CREATE is required because Snowflake caches files during initial CREATE\\n# This causes 1-2 minute downtime but ensures environment.yml changes are picked up'"
+        },
+        {
+          "type": "specific",
+          "file": "tools/deploy_to_snowflake_streamlit.py",
+          "line": 100,
+          "severity": "minor",
+          "category": "architecture",
+          "comment": "The environment.yml upload correctly targets the stage root (empty string for stage_path), which is required for Snowflake to detect it. This critical detail should be highlighted.",
+          "suggested_fix": "Add comment clarifying: 'upload_file_to_stage(cursor, str(env_file), STAGE_NAME, \"\")  # Must be at stage root for detection'"
+        },
+        {
+          "type": "specific",
+          "file": "tools/environment.yml",
+          "line": 5,
+          "severity": "suggestion",
+          "category": "design",
+          "comment": "The pinned versions are appropriate for stability. Consider adding a comment about why these specific versions were chosen (compatibility tested during RAEP investigation).",
+          "suggested_fix": "Add comment: '# Versions tested and confirmed working during RAEP Phase 1 investigation'"
+        },
+        {
+          "type": "specific",
+          "file": "tools/deploy_to_snowflake_streamlit.py",
+          "line": 206,
+          "severity": "minor",
+          "category": "bug",
+          "comment": "The file verification logic checks for required files but doesn't verify their integrity or content. Consider adding a size check to ensure files aren't empty.",
+          "suggested_fix": "Add file size verification: 'if row[4] == 0: print(f\"   ⚠ Warning: {row[0]} is empty\")'"
+        },
+        {
+          "type": "specific",
+          "file": "tools/DEPLOYMENT_GUIDE_PHASE2.md",
+          "line": 148,
+          "severity": "suggestion",
+          "category": "design",
+          "comment": "The deployment verification section is thorough. Consider adding a specific test for matplotlib import to directly verify the fix worked.",
+          "suggested_fix": "Add SQL test: 'CALL SYSTEM$RUN_PYTHON_UDF(\\'import matplotlib; print(matplotlib.__version__)\\')' to directly verify package availability"
+        },
+        {
+          "type": "general",
+          "severity": "minor",
+          "category": "security",
+          "comment": "The deployment script correctly uses key-pair authentication and doesn't expose credentials. The .gitignore properly excludes .pem files. Well done on security practices.",
+          "suggested_fix": "None needed - security is properly handled"
+        },
+        {
+          "type": "specific",
+          "file": "tools/deploy_to_snowflake_streamlit.py",
+          "line": 154,
+          "severity": "suggestion",
+          "category": "architecture",
+          "comment": "The error handling for DROP STREAMLIT silently continues if the app doesn't exist. This is correct behavior but could be more explicit about the expected case.",
+          "suggested_fix": "Distinguish between 'app doesn't exist' (expected on first deploy) vs other errors: 'if \"does not exist\" in str(e).lower()'"
+        },
+        {
+          "type": "specific",
+          "file": "tools/DEPLOYMENT_GUIDE_PHASE2.md",
+          "line": 231,
+          "severity": "minor",
+          "category": "architecture",
+          "comment": "The rollback plan Option B (Manual SQL Recovery) doesn't include re-adding packages. This could lead to confusion if someone uses this option.",
+          "suggested_fix": "Add note: 'Note: Manual SQL recovery will NOT include package dependencies. Use Option A or re-add packages via UI after recovery.'"
+        },
+        {
+          "type": "general",
+          "severity": "suggestion",
+          "category": "performance",
+          "comment": "The deployment verification performs multiple sequential database queries. These could potentially be batched or run in parallel for faster verification, though the current approach is clear and maintainable.",
+          "suggested_fix": "Consider using cursor.execute_async() for non-dependent verification queries if performance becomes an issue"
+        }
+      ],
+      "missing_requirements": [],
+      "summary": {
+        "design_violations": 0,
+        "critical_issues": 1,
+        "major_issues": 1,
+        "minor_issues": 4,
+        "suggestions": 4
+      },
+      "test_results": {
+        "passed": null,
+        "summary": "No test command provided - tests were not validated. The deployment script appears to be a deployment tool rather than application code, so unit tests may not be applicable. Integration testing would require a Snowflake environment.",
+        "failing_tests": [],
+        "coverage": "N/A"
+      },
+      "overall_assessment": "lgtm_with_suggestions",
+      "__claudeSessionId": "2dcd2859-5021-4005-a582-3ea6f989acbd",
+      "__claudeModel": "opus"
+    },
+    {
+      "review_id": "2025-12-03-001",
+      "timestamp": "2025-12-03T22:49:35.636Z",
+      "status": "approved",
+      "round": 2,
+      "design_compliance": {
+        "follows_architecture": true,
+        "major_violations": []
+      },
+      "comments": [
+        {
+          "type": "specific",
+          "file": "tools/environment.yml",
+          "line": 5,
+          "severity": "minor",
+          "category": "architecture",
+          "comment": "ADDRESSED: Added clear comment explaining versions were tested and confirmed working during RAEP Phase 1 investigation. The comment provides good traceability to the investigation that validated these versions.",
+          "suggested_fix": "None - properly addressed"
+        },
+        {
+          "type": "specific",
+          "file": "tools/deploy_to_snowflake_streamlit.py",
+          "line": 100,
+          "severity": "minor",
+          "category": "architecture",
+          "comment": "ADDRESSED: Added inline comment clarifying that environment.yml must be uploaded to stage root for Snowflake detection. The empty string parameter is now clearly documented.",
+          "suggested_fix": "None - properly addressed"
+        },
+        {
+          "type": "specific",
+          "file": "tools/deploy_to_snowflake_streamlit.py",
+          "line": 147,
+          "severity": "critical",
+          "category": "architecture",
+          "comment": "ADDRESSED: Excellent multi-line comment block that clearly explains DROP + CREATE is the ONLY reliable way to update packages, mentions the 1-2 minute downtime, and emphasizes this is critical for environment.yml changes. Very clear documentation.",
+          "suggested_fix": "None - comprehensively addressed"
+        },
+        {
+          "type": "specific",
+          "file": "tools/deploy_to_snowflake_streamlit.py",
+          "line": 157,
+          "severity": "minor",
+          "category": "architecture",
+          "comment": "ADDRESSED: Error handling now properly distinguishes between expected 'does not exist' errors (first deployment) vs other errors, with clear informational message for the expected case.",
+          "suggested_fix": "None - properly addressed"
+        },
+        {
+          "type": "specific",
+          "file": "tools/deploy_to_snowflake_streamlit.py",
+          "line": 166,
+          "severity": "major",
+          "category": "architecture",
+          "comment": "ADDRESSED: Comments now clearly state that Snowflake automatically detects environment.yml from stage root and emphasize it must be at root, not in subdirectories. Documentation is clear and accurate.",
+          "suggested_fix": "None - properly addressed"
+        },
+        {
+          "type": "specific",
+          "file": "tools/DEPLOYMENT_GUIDE_PHASE2.md",
+          "line": 234,
+          "severity": "minor",
+          "category": "architecture",
+          "comment": "ADDRESSED: Added clear warning emoji and explicit note that manual SQL recovery will NOT include package dependencies, with instructions to re-add via UI after recovery. Very clear warning to users.",
+          "suggested_fix": "None - properly addressed"
+        },
+        {
+          "type": "general",
+          "severity": "suggestion",
+          "category": "design",
+          "comment": "All critical and major feedback items from the initial review have been properly addressed. The implementation now has comprehensive documentation about the DROP + CREATE pattern being the only reliable way to update packages, clear warnings about downtime, and proper error handling distinguishing expected vs unexpected errors.",
+          "suggested_fix": "None - all feedback properly addressed"
+        }
+      ],
+      "missing_requirements": [],
+      "summary": {
+        "design_violations": 0,
+        "critical_issues": 1,
+        "major_issues": 1,
+        "minor_issues": 4,
+        "suggestions": 1
+      },
+      "test_results": {
+        "passed": null,
+        "summary": "No test command provided - tests were not validated. This is a deployment script that requires a Snowflake environment for testing.",
+        "failing_tests": [],
+        "coverage": "N/A"
+      },
+      "overall_assessment": "lgtm",
+      "__claudeSessionId": "2dcd2859-5021-4005-a582-3ea6f989acbd",
+      "__claudeModel": "opus"
+    }
+  ],
+  "request": {
+    "summary": "Phase 2 implementation: Automated Snowflake Streamlit package management via environment.yml with DROP + CREATE workflow to resolve matplotlib ModuleNotFoundError. Changes include:\n\n1. Created tools/environment.yml with pinned versions (streamlit=1.35.0, matplotlib=3.10.6, seaborn=0.13.2)\n2. Updated deploy_to_snowflake_streamlit.py to:\n   - Upload environment.yml to stage\n   - Implement DROP + CREATE pattern (replaces CREATE OR REPLACE) - required because Snowflake only copies files once\n   - Add deployment verification (checks app exists, verifies stage files)\n   - Enhanced output messaging\n3. Created comprehensive deployment guide (DEPLOYMENT_GUIDE_PHASE2.md) with pre-deployment checklist, rollback procedures, and troubleshooting\n\nThis implements Phase 2 of the RAEP investigation (.scratch/raep-debug/02-snowflake-matplotlib-import/10-handoff.md). Phase 1 (UI-based package addition) was completed by user.",
+    "focus_areas": [
+      "Verify DROP + CREATE logic is correct and safe",
+      "Check environment.yml syntax and version compatibility",
+      "Review deployment verification logic for completeness",
+      "Ensure rollback procedures are clear and actionable",
+      "Validate error handling in deployment script"
+    ]
+  },
+  "claudeSessionIds": {
+    "opus": "2dcd2859-5021-4005-a582-3ea6f989acbd"
+  }
+}

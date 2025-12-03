@@ -1,0 +1,13 @@
+ScenarioName,Generator_Type,Generator_Power_kW,GPU_Count,GPU_Type,GPU_Power_per_Unit_kW,GPU_Cluster_Power_kW,Max_Load_Step_kW,Generator_Load_Acceptance_pct,Generator_Load_Acceptance_kW,Load_Step_Magnitude_kW,Islanded_Operation,Black_Start_Required,Load_Sequencing_Available,BESS_Type,BESS_Power_kW,BESS_Energy_kWh,BESS_Cost_USD,Decision_Rationale
+Example_1MW_NatGas_500kW_GPU,Natural_Gas,1000,142,H100_PCIe,3.5,497,497,30,300,197,TRUE,FALSE,FALSE,Grid_Forming,400,150,400000,Natural gas generator (30% acceptance) cannot handle 497kW GPU step. Grid-forming BESS required for islanded operation.
+Example_1MW_NatGas_500kW_GPU_Buffer,Natural_Gas,1000,142,H100_PCIe,3.5,497,497,30,300,197,TRUE,FALSE,TRUE,Buffer,75,75,45000,Load sequencing reduces effective step to <200kW. Buffer BESS sufficient for transient support.
+Example_1MW_Diesel_500kW_GPU,Diesel,1000,142,H100_PCIe,3.5,497,497,70,700,0,FALSE,FALSE,FALSE,Buffer,50,50,30000,Diesel generator (70% acceptance) can handle GPU step. Buffer BESS for ride-through only.
+Example_2MW_NatGas_FastResp_500kW_GPU,Natural_Gas_Fast_Response,2000,142,H100_PCIe,3.5,497,497,100,2000,0,TRUE,FALSE,FALSE,Buffer,50,50,30000,Fast-response natural gas (100% block load) can handle step. Buffer BESS for ride-through.
+Example_4MW_CG260_2000kW_GPU,Natural_Gas_CG260,4300,571,H100_PCIe,3.5,1998.5,1998.5,16,688,1310.5,TRUE,FALSE,FALSE,Grid_Forming,600,200,500000,CG260 (16% first step) cannot handle 1998.5kW step. Grid-forming BESS required.
+Example_4MW_CG260_2000kW_GPU_Sequenced,Natural_Gas_CG260,4300,571,H100_PCIe,3.5,1998.5,1998.5,16,688,1310.5,TRUE,FALSE,TRUE,Grid_Forming,400,150,400000,Load sequencing reduces effective step. Smaller grid-forming BESS sufficient.
+Example_Small_4GPU_Cluster,Natural_Gas_Fast_Response,500,4,H100_PCIe,3.5,14,14,100,500,0,FALSE,FALSE,FALSE,No_BESS,0,0,0,Small cluster (≤4 GPUs) with fast-response generator. No-BESS viable with proper controls.
+Example_Medium_16GPU_Cluster,Natural_Gas,1000,16,H100_PCIe,3.5,56,56,30,300,0,FALSE,FALSE,FALSE,Buffer,50,50,30000,Medium cluster (16 GPUs) with standard natural gas. Buffer BESS recommended.
+Example_Large_64GPU_Cluster,Natural_Gas,2000,64,H100_PCIe,3.5,224,224,30,600,0,TRUE,FALSE,FALSE,Grid_Forming,300,100,350000,Large cluster (64 GPUs) with islanded operation. Grid-forming BESS required.
+Example_LeanBurn_NoSequencing,Natural_Gas_Lean_Burn,1000,142,H100_PCIe,3.5,497,497,25,250,247,TRUE,FALSE,FALSE,Grid_Forming,500,200,450000,Lean-burn natural gas (25% acceptance) cannot handle step. Grid-forming BESS required.
+Example_RichBurn_WithSequencing,Natural_Gas_Rich_Burn,1000,142,H100_PCIe,3.5,497,497,50,500,0,FALSE,FALSE,TRUE,Buffer,75,75,45000,Rich-burn natural gas with load sequencing. Buffer BESS sufficient.
+,,,,,,,,,,,,,,,,,,
