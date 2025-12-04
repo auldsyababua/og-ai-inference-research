@@ -156,7 +156,7 @@ def render_doc_link(param_name, label=None, icon="📖"):
 
 # Title
 st.markdown('<div class="main-header">🔌 Unified Off-Grid AI Inference Calculator</div>', unsafe_allow_html=True)
-st.markdown("**Version 1.0** | Calculate generator risk, BESS sizing, and data logistics costs")
+st.markdown("**Version 2.0** | Calculate generator risk, BESS sizing, and data logistics costs")
 
 # Sidebar for navigation and info
 with st.sidebar:
@@ -221,7 +221,7 @@ def load_data():
             
     except Exception as e:
         # Not running in Snowflake or connection failed - use file system fallback
-        st.info("📁 Using local file system (Snowflake stage not available)")
+        st.info("📁 Deployed on Render with embedded data files")
         BASE_PATH = None
     
     # Fallback: Load from local file system
