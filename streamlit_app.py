@@ -359,57 +359,63 @@ def calculate_generator_risk(n_gpus, delta_p_gpu, correlation_c, delta_t, p_rate
         'step_pct': step_pct
     }
 
-def recommend_bess(n_gpu, p_gpu, p_gen, gen_load_acceptance_pct, gen_type, 
-                   islanded, black_start, load_sequencing, risk_tolerance='Medium'):
-    """Recommend BESS type and sizing"""
+def recommend_bess(n_gpu, p_gpu, p_gen, gen_load_acceptance_pct, gen_type,
+                   black_start, load_sequencing, risk_tolerance='Medium'):
+    """Recommend BESS type and sizing (assumes islanded/off-grid operation)"""
     gpu_cluster_power = n_gpu * p_gpu
     max_load_step = gpu_cluster_power
     gen_load_acceptance_kw = p_gen * (gen_load_acceptance_pct / 100)
     load_step_magnitude = max_load_step - gen_load_acceptance_kw
-    
-    if (n_gpu <= 4 and 
-        ('Fast_Response' in gen_type or 'Rich_Burn' in gen_type) and 
-        not islanded and 
+
+    # Rule 1: Small cluster with fast-response generator + high risk tolerance → No BESS
+    if (n_gpu <= 4 and
+        ('Fast_Response' in gen_type or 'Rich_Burn' in gen_type) and
         risk_tolerance == 'High'):
         bess_type = 'No_BESS'
         bess_power_kw = 0
         bess_energy_kwh = 0
         bess_cost_usd = 0
         rationale = f"Small cluster (≤4 GPUs) with fast-response generator. No-BESS viable with proper controls."
-    # Rule 2: Generator can handle load step (load_step_magnitude <= 0)
-    elif load_step_magnitude <= 0:
-        if islanded:
-            # Islanded operation requires Grid-Forming BESS for frequency support, even if generator can handle step
-            bess_type = 'Grid_Forming'
-            bess_power_kw = max(400, min(600, gpu_cluster_power * 0.5))  # Size based on cluster, not gap
-            bess_energy_kwh = max(100, bess_power_kw * 0.25)
-            bess_cost_usd = 350000 + (bess_power_kw - 400) * 750
-            rationale = f"{gen_type} generator ({gen_load_acceptance_pct}% acceptance) can handle {max_load_step:.1f}kW GPU step. Grid-forming BESS required for islanded operation frequency support."
-        else:
-            # Grid-connected: Buffer BESS sufficient
-            bess_type = 'Buffer'
-            bess_power_kw = max(50, min(100, gpu_cluster_power * 0.3))
-            bess_energy_kwh = bess_power_kw * 1.0
-            bess_cost_usd = 30000 + (bess_power_kw - 50) * 500
-            rationale = f"{gen_type} generator ({gen_load_acceptance_pct}% acceptance) can handle {max_load_step:.1f}kW GPU step. Buffer BESS for ride-through only."
-    # Rule 3: Load sequencing reduces effective step
-    elif load_step_magnitude < 200 and load_sequencing and not islanded:
+
+    # Rule 2: AGGRESSIVE load sequencing + High risk → 50-100kW Buffer BESS
+    # (Load sequencing reduces effective step to 50-100kW regardless of generator capacity)
+    elif load_sequencing and risk_tolerance == 'High':
         bess_type = 'Buffer'
-        bess_power_kw = max(50, min(100, gpu_cluster_power * 0.3))
+        bess_power_kw = min(100, max(50, gpu_cluster_power * 0.05))
         bess_energy_kwh = bess_power_kw * 1.0
         bess_cost_usd = 30000 + (bess_power_kw - 50) * 500
-        rationale = f"Load sequencing reduces effective step to <200kW. Buffer BESS sufficient for transient support."
-    # Rule 4: Grid-Forming BESS required (default)
-    else:
+        rationale = f"Phase-stepped GPU startup (GPUs starting in sequence rather than all at once) + aggressive load sequencing limits effective step to 50-100kW. Buffer BESS sufficient for transient bridge (islanded)."
+
+    # Rule 3: MODERATE load sequencing (Medium/Low risk) → 150-200kW Grid-Forming BESS
+    # (Load sequencing reduces effective step to 100-200kW)
+    elif load_sequencing:
         bess_type = 'Grid_Forming'
+        bess_power_kw = min(200, max(150, gpu_cluster_power * 0.1))
+        bess_energy_kwh = max(100, bess_power_kw * 0.5)
+        bess_cost_usd = 100000 + (bess_power_kw - 150) * 600
+        rationale = f"Load sequencing reduces effective step to 100-200kW. Grid-Forming BESS (150-200kW) required for islanded frequency stability and transient response."
+
+    # Rule 4: NO load sequencing + Generator CAN handle unmanaged step → 400-600kW Grid-Forming BESS
+    # (Still need large BESS for islanded frequency stability despite generator capacity)
+    elif load_step_magnitude <= 0:
+        bess_type = 'Grid_Forming'
+        bess_power_kw = max(400, min(600, gpu_cluster_power * 0.5))
+        bess_energy_kwh = max(100, bess_power_kw * 0.25)
+        bess_cost_usd = 350000 + (bess_power_kw - 400) * 750
+        rationale = f"{gen_type} generator ({gen_load_acceptance_pct}% acceptance) can handle {max_load_step:.1f}kW step, but islanded operation requires 400-600kW Grid-Forming BESS for frequency regulation, voltage support, and fast transient response without grid connection."
+
+    # Rule 5: NO load sequencing + Generator CANNOT handle unmanaged step → 400-600kW+ Grid-Forming BESS
+    # (Need large BESS to handle both the step AND provide islanded frequency support)
+    else:
         bess_power_kw = min(600, max(400, load_step_magnitude * 1.2))
         bess_energy_kwh = max(100, bess_power_kw * 0.25)
         bess_cost_usd = 350000 + (bess_power_kw - 400) * 750
+        bess_type = 'Grid_Forming'
         if 'CG260' in gen_type:
-            rationale = f"{gen_type} ({gen_load_acceptance_pct}% first step) cannot handle {max_load_step:.1f}kW step. Grid-forming BESS required."
+            rationale = f"{gen_type} ({gen_load_acceptance_pct}% first step) cannot handle {max_load_step:.1f}kW step. Grid-forming BESS (400-600kW) required for islanded stability."
         else:
-            rationale = f"{gen_type} generator ({gen_load_acceptance_pct}% acceptance) cannot handle {max_load_step:.1f}kW GPU step. Grid-forming BESS required."
-    
+            rationale = f"{gen_type} generator ({gen_load_acceptance_pct}% acceptance) cannot handle {max_load_step:.1f}kW GPU step. Grid-forming BESS (400-600kW) required for islanded stability."
+
     return {
         'bess_type': bess_type,
         'bess_power_kw': bess_power_kw,
@@ -527,15 +533,14 @@ with col2:
 
 with col3:
     st.subheader("⚙️ Operational Parameters")
-    islanded = st.checkbox("Islanded Operation", value=True, 
-                          help=format_help_text("Generator operates independently without grid connection. Requires grid-forming BESS for frequency stability.", "Islanded Operation"))
-    render_doc_link("Islanded Operation", label="Learn more about Operational Parameters →", icon="📖")
+    st.info("**Note:** All deployments are assumed to be islanded (off-grid) operation.")
     black_start = st.checkbox("Black Start Required", value=False,
                              help=format_help_text("Generator must be able to start without external power source. Affects BESS sizing requirements.", "Black Start Required"))
     load_sequencing = st.checkbox("Load Sequencing Available", value=False,
-                                 help=format_help_text("GPU cluster can be powered on gradually in stages, reducing initial load step magnitude.", "Load Sequencing Available"))
+                                 help=format_help_text("GPU cluster can be powered on gradually in stages (phase-stepped startup), reducing initial load step magnitude. Enables smaller BESS if implemented aggressively.", "Load Sequencing Available"))
+    render_doc_link("Load Sequencing Available", label="Learn more about Operational Parameters →", icon="📖")
     risk_tolerance = st.selectbox("Risk Tolerance", options=['Low', 'Medium', 'High'], index=1,
-                                 help=format_help_text("Acceptable risk level for generator stability. Low = conservative (larger BESS), High = aggressive (smaller/no BESS).", "Risk Tolerance"))
+                                 help=format_help_text("Acceptable risk level for generator stability. Low = conservative (larger BESS), High = aggressive (smaller/no BESS with load sequencing).", "Risk Tolerance"))
 
 # Advanced Parameters (collapsible)
 with st.expander("🔧 Advanced Generator Risk Parameters"):
@@ -593,7 +598,7 @@ if calculate_button:
         # 2. BESS Recommendation
         bess_results = recommend_bess(
             gpu_count, gpu_power, gen_power, gen_load_acceptance_pct,
-            gen_type, islanded, black_start, load_sequencing, risk_tolerance
+            gen_type, black_start, load_sequencing, risk_tolerance
         )
         
         # 3. Data Logistics
