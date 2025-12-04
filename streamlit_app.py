@@ -13,6 +13,14 @@ import os
 import sys
 from datetime import datetime
 
+# Page config - MUST BE FIRST STREAMLIT COMMAND
+st.set_page_config(
+    page_title="Unified Off-Grid AI Inference Calculator",
+    page_icon="🔌",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 # Try to connect to Snowflake (optional - falls back to local CSV files if not available)
 SNOWFLAKE_AVAILABLE = False
 try:
@@ -22,14 +30,6 @@ except Exception as e:
     # Snowflake connection not configured or unavailable
     # Will use local CSV files instead
     pass
-
-# Page config
-st.set_page_config(
-    page_title="Unified Off-Grid AI Inference Calculator",
-    page_icon="🔌",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
 # Custom CSS for better styling
 st.markdown("""
