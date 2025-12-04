@@ -19,6 +19,89 @@ st.title("📡 Data Logistics Documentation")
 st.markdown("""
 This page provides detailed documentation for **Data Logistics** calculations, including
 Starlink, Sneakernet, and Fiber cost comparisons.
+
+## 🎯 Addressable Market Context
+
+Data movement constraints are the **primary limiting factor** for off-grid AI inference viability.
+Our market research identifies **$2-3B (2025) → $7-10B (2030)** addressable market for workloads
+that meet specific data transfer thresholds.
+
+### Data Movement Viability Thresholds
+
+The **<1TB per job** threshold is the critical breakpoint between "strong" and "marginal" off-grid viability
+across all market analyses:
+
+| Scenario | Data Size | Transfer Method | Turnaround | Viability |
+|----------|-----------|-----------------|-----------|-----------|
+| **Starlink-only (ideal)** | <100GB | 100-200 Mbps satellite | 3-8 hours | ✅ STRONG |
+| **Starlink-only (stretched)** | 100GB-1TB | 100-200 Mbps satellite | 8-30 hours | ✅ MODERATE |
+| **Starlink + sneakernet** | 1-5TB | Satellite + occasional drive shipment | 1-3 days | ⚠️ MARGINAL |
+| **Sneakernet-primary** | 5-50TB | Weekly/monthly drive shipments | 1-2 weeks | ⚠️ MARGINAL |
+| **Sneakernet-only** | 50-500TB | Dedicated appliance logistics | 2-4 weeks | ❌ WEAK |
+| **Not viable** | >500TB or multi-TB/day continuous | N/A | N/A | ❌ NOT VIABLE |
+
+### Compute-Intensity Ratio (CIR)
+
+**Definition:** CIR = GPU-hours required / TB of data transferred
+
+**Viability threshold:** CIR > 10 (i.e., >10 GPU-hours per TB transferred)
+
+**High-CIR Workloads (Viable):**
+- **AlphaFold (1k proteins):** CIR ~500 (Input: <1GB, Compute: ~500 GPU-hours)
+- **Batch LLM (1TB corpus):** CIR ~30 (Processing 1TB text = 30+ GPU-hours on 70B model)
+- **Generative Images (10k images):** CIR ~100 (Prompts: 10MB, Compute: ~100 GPU-hours, Output: 100GB)
+- **Synthetic Data (10TB output):** CIR ~200 (Seed: negligible, Compute: days, Output: 10TB)
+
+**Low-CIR Workloads (Non-Viable):**
+- **Video Post-Production (10TB raw):** CIR ~1 (Mostly file I/O with some GPU transforms)
+- **Analytics/BI (scanning 10TB):** CIR ~0.5 (Dominated by data reading, minimal compute)
+- **Medical Imaging (batch 1TB scans):** CIR ~5 (Significant I/O, moderate GPU inference)
+
+### Top Viable Workloads
+
+Based on consensus across four independent market analyses, these workloads represent 85-95% of the addressable market:
+
+**Tier 1: Immediate Focus ($1.2-2.4B)**
+1. **Batch LLM Inference** - $500M-1B opportunity
+   - Typical data: 10GB-1TB per job
+   - Latency tolerance: 24-48h
+   - Example: Overnight document summarization, embeddings generation
+
+2. **Generative Image/Video** - $400-800M opportunity
+   - Typical data: Input KB-MB, Output 100GB-1TB
+   - Latency tolerance: 24-48h
+   - Example: Ad agency generating 10k creatives overnight
+
+3. **Synthetic Data Generation** - $300-600M opportunity
+   - Typical data: Output 1-10TB
+   - Latency tolerance: Days-weeks
+   - Example: Training data generation for AI model development
+
+**Tier 2: Near-Term Expansion ($500M-1B)**
+4. **AlphaFold/Protein Folding** - $200-400M opportunity
+   - Typical data: Input <1GB, Output <10GB
+   - Latency tolerance: 12-48h
+   - Example: Pharma running 10k protein structure predictions weekly
+
+5. **LoRA Fine-Tuning** - $200-400M opportunity
+   - Typical data: 10-50GB
+   - Latency tolerance: 1-3 days
+   - Example: Custom model adaptation for enterprise applications
+
+### Regulatory Blockers
+
+These scenarios represent ~40-50% of potential batch inference market but are immediately disqualified:
+
+**Non-Negotiable Barriers:**
+- ❌ **HIPAA/PHI (Healthcare):** Patient imaging (CT, MRI, pathology), clinical diagnosis
+- ❌ **Financial Services (SOX, PCI-DSS):** Tier-1 banking, credit card processing
+- ❌ **Real-time/Interactive:** Latency requirements <1 second
+- ❌ **Continuous Streaming:** Cannot tolerate batch windows
+
+**Manageable Scenarios:**
+- ✅ **GDPR (EU data):** Can be handled with proper data residency
+- ✅ **Corporate IP:** Addressed via contractual protections, encryption
+- ✅ **Light PII (LLM batch):** Acceptable with BAAs, encryption, anonymization
 """)
 
 # Navigation
